@@ -1,9 +1,10 @@
 '''
 Platformer Game
+
+python -m arcade.examples.platform_tutorial.11_animate_character
 '''
 import arcade
 import os
-import random
 
 # Constants.
 SCREEN_WIDTH = 1280
@@ -22,8 +23,8 @@ PLAYER_MOVEMENT_SPEED = 7
 GRAVITY = 1.5
 PLAYER_JUMP_SPEED = 30
 
-# How many pixels to keep as a minimum margin between
-# the character and the edge of the screen.
+# How many pixels to keep as a minimum margin between the character
+# and the edge of the screen.
 LEFT_VIEWPORT_MARGIN = 200
 RIGHT_VIEWPORT_MARGIN = 200
 BOTTOM_VIEWPORT_MARGIN = 150
@@ -32,16 +33,15 @@ TOP_VIEWPORT_MARGIN = 100
 PLAYER_START_X = SPRITE_PIXEL_SIZE * TILE_SCALING * 2
 PLAYER_START_Y = SPRITE_PIXEL_SIZE * TILE_SCALING * 1
 
-# Where the player dies if they fall through the world.
-WORLD_BOTTOM = -200
-
 # Constants used to track if the player is facing left or right.
 RIGHT_FACING = 0
 LEFT_FACING = 1
 
 
 def load_texture_pair(filename):
-    '''Load a texture pair, with the second being a mirror image.'''
+    '''
+    Load a texture pair, with the second being a mirror image.
+    '''
     return [
         arcade.load_texture(filename),
         arcade.load_texture(filename, flipped_horizontally=True)
@@ -50,13 +50,12 @@ def load_texture_pair(filename):
 
 class PlayerCharacter(arcade.Sprite):
     '''Player Sprite.'''
-
     def __init__(self):
 
         # Set up parent class.
         super().__init__()
 
-        # Default to face right.
+        # Default to face-right.
         self.character_face_direction = RIGHT_FACING
 
         # Used for flipping between image sequences.
@@ -70,7 +69,7 @@ class PlayerCharacter(arcade.Sprite):
 
         # --- Load Textures --- #
 
-        # Images from Kenney.nl's Asset Pack 3.
+        # Images from Kenney.nl's Asset Pack 3
         # main_path = ':resources:images/animated_characters/female_adventurer/femaleAdventurer'
         # main_path = ':resources:images/animated_characters/female_person/femalePerson'
         main_path = ':resources:images/animated_characters/male_person/malePerson'
@@ -102,9 +101,9 @@ class PlayerCharacter(arcade.Sprite):
         # Hit box will be set based on the first image used. If you want to specify
         # a different hit box, you can do it like the code below.
         # self.set_hit_box([[-22, -64], [22, -64], [22, 28], [-22, 28]])
-        # self.set_hit_box(self.texture.hit_box_points)
+        self.set_hit_box(self.texture.hit_box_points)
 
-    def update_animation(self, delta_time: float = 1 / 60):
+    def update_animation(self, delta_time: float = 1/60):
 
         # Figure out if we need to flip face left or right.
         if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
@@ -146,10 +145,14 @@ class PlayerCharacter(arcade.Sprite):
 
 
 class MyGame(arcade.Window):
-    '''Main application class.'''
+    '''
+    Main application class.
+    '''
 
     def __init__(self):
-        '''Initialiser for the game.'''
+        '''
+        Initializer for the game
+        '''
 
         # Call the parent class and set up the window.
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
@@ -165,8 +168,8 @@ class MyGame(arcade.Window):
         self.down_pressed = False
         self.jump_needs_reset = False
 
-        # These are 'lists' that keep track of our sprites.
-        # Each sprite should go into a list.
+        # These are 'lists' that keep track of our sprites. Each sprite should
+        # go into a list.
         self.coin_list = None
         self.wall_list = None
         self.background_list = None
@@ -212,8 +215,8 @@ class MyGame(arcade.Window):
         # Set up the player, specifically placing it at these coordinates.
         self.player_sprite = PlayerCharacter()
 
-        self.player_sprite.centre_x = PLAYER_START_X
-        self.player_sprite.centre_y = PLAYER_START_Y
+        self.player_sprite.center_x = PLAYER_START_X
+        self.player_sprite.center_y = PLAYER_START_Y
         self.player_list.append(self.player_sprite)
 
         # --- Load in a map from the tiled editor --- #
@@ -259,7 +262,7 @@ class MyGame(arcade.Window):
                                                       use_spatial_hash=True)
 
         # Other stuff.
-        # Set the background colour
+        # Set the background color
         if my_map.background_color:
             arcade.set_background_color(my_map.background_color)
 
@@ -270,7 +273,7 @@ class MyGame(arcade.Window):
                                                              ladders=self.ladder_list)
 
     def on_draw(self):
-        '''Render the screen.'''
+        ''' Render the screen. '''
 
         # Clear the screen to the background colour.
         arcade.start_render()
@@ -289,12 +292,13 @@ class MyGame(arcade.Window):
 
         # Draw hit boxes.
         # for wall in self.wall_list:
-        #     wall.draw_hit_box(arcade.colour.BLACK, 3)
+        #     wall.draw_hit_box(arcade.color.BLACK, 3)
         #
         # self.player_sprite.draw_hit_box(arcade.color.RED, 3)
 
     def process_keychange(self):
         '''Called when we change a key up/down or we move on/off a ladder.'''
+
         # Process up/down.
         if self.up_pressed and not self.down_pressed:
             if self.physics_engine.is_on_ladder():
@@ -353,10 +357,6 @@ class MyGame(arcade.Window):
 
     def on_update(self, delta_time):
         '''Movement and game logic.'''
-
-        # Check if the player fell through the world.
-        if self.player_sprite.centre_y < WORLD_BOTTOM:
-            self.setup()
 
         # Move the player with the physics engine.
         self.physics_engine.update()
@@ -441,8 +441,8 @@ class MyGame(arcade.Window):
             changed_viewport = True
 
         if changed_viewport:
-            # Only scroll to integers. Otherwise we end up with
-            # pixels that don't line up on the screen.
+            # Only scroll to integers. Otherwise we end up with pixels that
+            # don't line up on the screen.
             self.view_bottom = int(self.view_bottom)
             self.view_left = int(self.view_left)
 
