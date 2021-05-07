@@ -1,7 +1,5 @@
 '''
-Platformer Game
-
-python -m arcade.examples.platform_tutorial.11_animate_character
+Platformer game, by Kael.
 '''
 import arcade
 import os
