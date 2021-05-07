@@ -1,2 +1,2 @@
-# unexplored
-Platformer game.
+# UNEXPLORED
+Platformer game, by Kael.
