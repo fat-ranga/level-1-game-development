@@ -93,6 +93,14 @@ class PlayerCharacter(arcade.Sprite):
         self.set_hit_box([[-6, -31], [-6, 32], [17, 32], [17, -31]])
         # self.set_hit_box(self.texture.hit_box_points)
 
+    '''Functions for returning booleans related to idling, climbing, jumping etc.'''
+    def is_idling(self):
+        return self.idling
+    def is_climbing(self):
+        return self.climbing
+    def is_on_ladder(self):
+        return self.is_on_ladder
+
     def update_animation(self, delta_time: float = 1 / 60):
         # Figure out if we need to flip face left or right.
         if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
@@ -193,7 +201,7 @@ class PlayerCharacterLegs(arcade.Sprite):
         self.center_y = sprite.center_y
         self.center_x = sprite.center_x
 
-        self.on_ladder = on_ladder
+        self.is_on_ladder = on_ladder
         self.idling = idling
         
     def update_animation(self, delta_time: float = 1 / 60):
@@ -204,9 +212,9 @@ class PlayerCharacterLegs(arcade.Sprite):
             self.character_face_direction = RIGHT_FACING
 
         # CLIMBING animation.
-        if self.on_ladder:
+        if self.is_on_ladder:
             self.climbing = True
-        if not self.on_ladder and self.climbing:
+        if not self.is_on_ladder and self.climbing:
             self.climbing = False
         if self.climbing and abs(self.change_y) > 1:
             self.cur_texture += 1
@@ -217,10 +225,10 @@ class PlayerCharacterLegs(arcade.Sprite):
             return
 
         # JUMPING animation.
-        if self.change_y > 0 and not self.on_ladder:
+        if self.change_y > 0 and not self.is_on_ladder:
             self.texture = self.jump_texture_pair[self.character_face_direction]
             return
-        elif self.change_y < 0 and not self.on_ladder:
+        elif self.change_y < 0 and not self.is_on_ladder:
             self.texture = self.fall_texture_pair[self.character_face_direction]
             return
 
@@ -311,8 +319,8 @@ class MyGame(arcade.Window):
         self.player_sprite.center_y = PLAYER_START_Y
 
         self.player_sprite_legs = PlayerCharacterLegs()
-        self.player_sprite_legs.center_x = PLAYER_START_X
-        self.player_sprite_legs.center_y = PLAYER_START_Y
+        self.player_sprite_legs.center_x = self.player_sprite.center_x
+        self.player_sprite_legs.center_y = self.player_sprite.center_y
 
         self.player_list.append(self.player_sprite_legs)
         self.player_list.append(self.player_sprite)
@@ -467,7 +475,8 @@ class MyGame(arcade.Window):
         self.physics_engine.update()
         # Move body parts to player's position
         self.player_sprite_legs.update_and_follow_sprite(sprite=self.player_sprite,
-                                                         idling=self.player_sprite.is_idling())
+                                                         idling=self.player_sprite.is_idling,
+                                                         on_ladder=self.player_sprite.is_on_ladder)
 
         # Update animations.
         if self.physics_engine.can_jump():
