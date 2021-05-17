@@ -38,7 +38,6 @@ PLAYER_START_Y = 2000
 RIGHT_FACING = 0
 LEFT_FACING = 1
 
-
 def load_texture_pair(filename):
     '''Loads a texture pair, with the second being a mirror image.'''
     return [
@@ -52,7 +51,7 @@ class PlayerCharacter(arcade.Sprite):
     def __init__(self):
         # Set up parent class.
         super().__init__()
-
+        
         # Default to face-right.
         self.character_face_direction = RIGHT_FACING
 
@@ -91,10 +90,8 @@ class PlayerCharacter(arcade.Sprite):
 
         # Hit box will be set based on the first image used. If you want to specify
         # a different hit box, you can do it like the code below.
-        self.set_hit_box([[-6, -32], [-6, 32], [10, 32], [10, -32]])
+        self.set_hit_box([[-6, -31], [-6, 32], [17, 32], [17, -31]])
         # self.set_hit_box(self.texture.hit_box_points)
-
-        self.player_sprite_legs = PlayerCharacterLegs()
 
     def update_animation(self, delta_time: float = 1 / 60):
         # Figure out if we need to flip face left or right.
@@ -138,99 +135,107 @@ class PlayerCharacter(arcade.Sprite):
         direction = self.character_face_direction
         self.texture = self.walk_textures[frame][direction]
 
-    class PlayerCharacterLegs():
-        '''Legs sprite that follows the actual player character body.'''
+class PlayerCharacterLegs(arcade.Sprite):
+    '''Legs sprite that follows the actual player character body.'''
+    def __init__(self):
+        # Set up parent class.
+        super().__init__()
 
-        def __init__(self):
-            # Set up parent class.
-            super().__init__()
+        # Default to face-right.
+        self.character_face_direction = RIGHT_FACING
 
-            # Default to face-right.
-            self.character_face_direction_legs = RIGHT_FACING
+        # Used for flipping between image sequences.
+        self.cur_texture = 0
+        self.scale = PIXEL_SCALING
 
-            # Used for flipping between image sequences.
-            self.cur_texture_legs = 0
-            self.scale = PIXEL_SCALING
+        # Track our state. The values of these variables are largely determined by the PlayerCharacter sprite.
+        self.jumping = False
+        self.climbing = False
+        self.is_on_ladder = False
+        self.idling = False
 
-            # Track our state.
-            self.jumping = False
+        # --- Load Textures --- #
+
+        # Load textures for IDLE standing.
+        self.idle_texture_pair = load_texture_pair(f'resources/images/characters/body/idle_to_walk_0.png')
+        self.jump_texture_pair = load_texture_pair(f'resources/images/characters/body/idle_to_walk_0.png')
+        self.fall_texture_pair = load_texture_pair(f'resources/images/characters/body/idle_to_walk_0.png')
+
+        # Load textures for WALKING.
+        self.walk_textures = []
+        for i in range(9):
+            texture = load_texture_pair(f'resources/images/characters/legs/walk_{i}.png')
+            self.walk_textures.append(texture)
+
+        # Load textures for CLIMBING.
+        self.climbing_textures = []
+        texture = arcade.load_texture(f'resources/images/characters/body/idle_to_walk_0.png')
+        self.climbing_textures.append(texture)
+        texture = arcade.load_texture(f'resources/images/characters/body/idle_to_walk_0.png')
+        self.climbing_textures.append(texture)
+
+        # Set the initial texture.
+        self.texture = self.idle_texture_pair[0]
+
+        # Hit box will be set based on the first image used. If you want to specify
+        # a different hit box, you can do it like the code below.
+        # self.set_hit_box([[-6, -31], [-6, 32], [17, 32], [17, -31]])
+        # self.set_hit_box(self.texture.hit_box_points)
+
+    def update_and_follow_sprite(self, sprite, on_ladder, idling):
+        '''
+        This function will move the current sprite towards whatever
+        other sprite is specified as a parameter, and also update the
+        checks for which animations it should do.
+        '''
+
+        # Move to the position of the player.
+        self.center_y = sprite.center_y
+        self.center_x = sprite.center_x
+
+        self.on_ladder = on_ladder
+        self.idling = idling
+        
+    def update_animation(self, delta_time: float = 1 / 60):
+        # Figure out if we need to flip face left or right.
+        if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
+            self.character_face_direction = LEFT_FACING
+        elif self.change_x > 0 and self.character_face_direction == LEFT_FACING:
+            self.character_face_direction = RIGHT_FACING
+
+        # CLIMBING animation.
+        if self.on_ladder:
+            self.climbing = True
+        if not self.on_ladder and self.climbing:
             self.climbing = False
-            self.is_on_ladder = False
-            self.idling = False
+        if self.climbing and abs(self.change_y) > 1:
+            self.cur_texture += 1
+            if self.cur_texture > 7:
+                self.cur_texture = 0
+        if self.climbing:
+            self.texture = self.climbing_textures[self.cur_texture // 4]
+            return
 
-            # --- Load Textures --- #
+        # JUMPING animation.
+        if self.change_y > 0 and not self.on_ladder:
+            self.texture = self.jump_texture_pair[self.character_face_direction]
+            return
+        elif self.change_y < 0 and not self.on_ladder:
+            self.texture = self.fall_texture_pair[self.character_face_direction]
+            return
 
-            # Load textures for IDLE standing.
-            self.idle_texture_pair_legs = load_texture_pair(f'resources/images/characters/legs/idle_to_walk_0.png')
-            self.jump_texture_pair_legs = load_texture_pair(f'resources/images/characters/legs/idle_to_walk_0.png')
-            self.fall_texture_pair_legs = load_texture_pair(f'resources/images/characters/legs/idle_to_walk_0.png')
+        # IDLE animation.
+        if self.idling == True:
+            self.texture = self.idle_texture_pair[self.character_face_direction]
+            return
 
-            # Load textures for WALKING.
-            self.walk_textures_legs = []
-            for i in range(9):
-                texture = load_texture_pair(f'resources/images/characters/legs/walk_{i}.png')
-                self.walk_textures_legs.append(texture)
-
-            # Load textures for CLIMBING.
-            self.climbing_textures_legs = []
-            texture = arcade.load_texture(f'resources/images/characters/legs/idle_to_walk_0.png')
-            self.climbing_textures_legs.append(texture)
-            texture = arcade.load_texture(f'resources/images/characters/legs/idle_to_walk_0.png')
-            self.climbing_textures_legs.append(texture)
-
-            # Set the initial texture.
-            self.texture = self.idle_texture_pair_legs[0]
-
-            # Hit box will be set based on the first image used. If you want to specify
-            # a different hit box, you can do it like the code below.
-            self.set_hit_box([[-6, -32], [-6, 32], [10, 32], [10, -32]])
-            # self.set_hit_box(self.texture.hit_box_points)
-
-        def update_animation(self, delta_time: float = 1 / 60):
-            # Move to the player body's position.
-            # self.center_x = self.player_sprite.center_x
-            # self.center_y = self.player_sprite.center_y
-
-            # Figure out if we need to flip face left or right.
-            if self.change_x < 0 and self.character_face_direction_legs == RIGHT_FACING:
-                self.character_face_direction_legs = LEFT_FACING
-            elif self.change_x > 0 and self.character_face_direction_legs == LEFT_FACING:
-                self.character_face_direction_legs = RIGHT_FACING
-
-            # CLIMBING animation.
-            if self.is_on_ladder:
-                self.climbing = True
-            if not self.is_on_ladder and self.climbing:
-                self.climbing = False
-            if self.climbing and abs(self.change_y) > 1:
-                self.cur_texture += 1
-                if self.cur_texture > 7:
-                    self.cur_texture = 0
-            if self.climbing:
-                self.texture = self.climbing_textures[self.cur_texture // 4]
-                return
-
-            # JUMPING animation.
-            if self.change_y > 0 and not self.is_on_ladder:
-                self.texture = self.jump_texture_pair_legs[self.character_face_direction_legs]
-                return
-            elif self.change_y < 0 and not self.is_on_ladder:
-                self.texture = self.fall_texture_pair_legs[self.character_face_direction_legs]
-                return
-
-            # IDLE animation.
-            if self.change_x == 0:
-                self.idling = True
-                self.texture = self.idle_texture_pair_legs[self.character_face_direction_legs]
-                return
-
-            # WALKING animation.
-            self.cur_texture_legs += 1
-            if self.cur_texture_legs > 8 * UPDATES_PER_FRAME:
-                self.cur_texture_legs = 0
-            frame = self.cur_texture_legs // UPDATES_PER_FRAME
-            direction = self.character_face_direction_legs
-            self.texture = self.walk_textures_legs[frame][direction]
+        # WALKING animation.
+        self.cur_texture += 1
+        if self.cur_texture > 8 * UPDATES_PER_FRAME:
+            self.cur_texture = 0
+        frame = self.cur_texture // UPDATES_PER_FRAME
+        direction = self.character_face_direction
+        self.texture = self.walk_textures[frame][direction]
 
 
 
@@ -302,9 +307,14 @@ class MyGame(arcade.Window):
 
         # Set up the player, specifically placing it at these coordinates.
         self.player_sprite = PlayerCharacter()
-
         self.player_sprite.center_x = PLAYER_START_X
         self.player_sprite.center_y = PLAYER_START_Y
+
+        self.player_sprite_legs = PlayerCharacterLegs()
+        self.player_sprite_legs.center_x = PLAYER_START_X
+        self.player_sprite_legs.center_y = PLAYER_START_Y
+
+        self.player_list.append(self.player_sprite_legs)
         self.player_list.append(self.player_sprite)
 
         # --- Load in a map from the tiled editor --- #
@@ -378,7 +388,7 @@ class MyGame(arcade.Window):
         # Draw our score on the screen, scrolling it with the viewport.
         score_text = f'Score: {self.score}'
         arcade.draw_text(score_text, 10 + self.view_left, 10 + self.view_bottom,
-                         arcade.csscolor.BLACK, 18)
+                         arcade.csscolor.WHITE, 32, font_name='resources/Unexplored.ttf')
 
         # Draw hit boxes.
         # for wall in self.wall_list:
@@ -451,8 +461,13 @@ class MyGame(arcade.Window):
         if self.player_sprite.center_y < WORLD_BOTTOM:
             self.setup()
 
+        print(self.player_list)
+
         # Move the player with the physics engine.
         self.physics_engine.update()
+        # Move body parts to player's position
+        self.player_sprite_legs.update_and_follow_sprite(sprite=self.player_sprite,
+                                                         idling=self.player_sprite.is_idling())
 
         # Update animations.
         if self.physics_engine.can_jump():
