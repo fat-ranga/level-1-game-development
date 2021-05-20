@@ -530,6 +530,7 @@ class MyGame(arcade.Window):
         self.collect_coin_sound = arcade.load_sound(':resources:sounds/coin1.wav')
         self.jump_sound = arcade.load_sound(':resources:sounds/jump1.wav')
         self.game_over = arcade.load_sound(':resources:sounds/gameover1.wav')
+        self.glock_17_fire = arcade.load_sound('resources/audio/glock_17_fire.wav')
 
         # Set background colour.
         arcade.set_background_color(arcade.color.CORNFLOWER_BLUE)
@@ -741,6 +742,7 @@ class MyGame(arcade.Window):
 
             # Add the bullet to the appropriate lists
             self.bullet_list.append(bullet)
+            arcade.play_sound(self.glock_17_fire)
 
     def on_update(self, delta_time):
         '''Movement and game logic.'''
