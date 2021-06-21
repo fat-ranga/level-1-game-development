@@ -20,9 +20,10 @@ MAP_WIDTH = 256 * PIXEL_SCALING
 MAP_HEIGHT = 256 * PIXEL_SCALING
 
 # Movement speed of player, in pixels per frame.
-PLAYER_MOVEMENT_SPEED = 5
-GRAVITY = 1.4
-PLAYER_JUMP_SPEED = 26
+PLAYER_WALK_SPEED = 4
+PLAYER_RUN_SPEED = 9
+GRAVITY = 0.91
+PLAYER_JUMP_SPEED = 25
 UPDATES_PER_FRAME = 10
 
 # How many pixels to keep as a minimum margin between
