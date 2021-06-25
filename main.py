@@ -10,6 +10,7 @@ import math
 import game_constants as c
 import game_player as p
 import game_functions as f
+import game_audio as a
 
 
 class MyGame(arcade.Window):
@@ -73,6 +74,9 @@ class MyGame(arcade.Window):
 
         # Set background colour.
         arcade.set_background_color(arcade.color.CORNFLOWER_BLUE)
+
+        # Load all the audio.
+        a.load_audio()
 
     def setup(self):
         '''Set up the game here. Call this function to restart the game.'''
@@ -176,7 +180,8 @@ class MyGame(arcade.Window):
         self.ladder_list.draw(filter=GL_NEAREST)
         self.coin_list.draw(filter=GL_NEAREST)
         '''
-        #self.player_sprite.update_appendages()
+
+        self.player_sprite.update_appendages()
         self.player_list.draw(filter=GL_NEAREST)
         self.bullet_list.draw(filter=GL_NEAREST)
         self.foreground_decorations_list.draw(filter=GL_NEAREST)
@@ -272,8 +277,8 @@ class MyGame(arcade.Window):
     def on_key_release(self, key, modifiers):
         '''Called when the user releases a key.'''
 
-        if modifiers == 1:
-            self.shift_pressed = False
+        #if modifiers == 1:
+        #    self.shift_pressed = False
         if key == arcade.key.W:
             self.up_pressed = False
             self.jump_needs_reset = False
@@ -291,7 +296,7 @@ class MyGame(arcade.Window):
 
         # Create a bullet
         if self.player_sprite.equipped_one_handed:
-            self.player_sprite.firing = True
+            self.player_sprite.front_arm.firing = True
             bullet = arcade.Sprite('resources/images/effects/bullet_projectile.png', c.PIXEL_SCALING)
             bullet.set_hit_box([[-2, -2], [-2, 2], [2, 2], [2, -2]])
 
@@ -350,8 +355,6 @@ class MyGame(arcade.Window):
                     if self.player_sprite.back_arm.cur_texture == self.player_sprite.cur_texture or self.player_sprite.equipped_any:
                         self.player_list.update_animation(delta_time)'''
 
-        #self.player_list.update_animation(delta_time)
-
         if self.player_sprite.center_y < c.WORLD_BOTTOM:
             self.setup()
 
@@ -377,9 +380,7 @@ class MyGame(arcade.Window):
             self.process_keychange()
 
         # Move body parts to player's position and update checking variables.
-
         self.player_list.update_animation(delta_time)
-        #self.player_sprite.update_appendages()
 
         self.coin_list.update_animation(delta_time)
         self.background_list.update_animation(delta_time)

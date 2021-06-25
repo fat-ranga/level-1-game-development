@@ -111,7 +111,9 @@ class PlayerCharacter(arcade.Sprite):
         self.mouse_pos_y = y
 
     def update_appendages(self, delta_time: float = 1 / 60):
-        '''Positions the sprites and updates variables such as jumping and idling for the legs.'''
+        '''Positions the sprites and updates variables such as jumping and idling for the legs.
+            Makes the cur_texture of all the appendages the same as the player sprite's.
+        '''
 
         # Set type of gun equipped.
         self.front_arm.equipped_one_handed = self.equipped_one_handed
@@ -126,8 +128,8 @@ class PlayerCharacter(arcade.Sprite):
         self.legs.is_on_ladder = self.is_on_ladder
         self.legs.idling = self.idling
         self.legs.sprinting = self.sprinting
-
         self.legs.cur_texture = self.cur_texture
+
         self.legs.character_face_direction = self.character_face_direction
 
         # Head.
@@ -149,9 +151,9 @@ class PlayerCharacter(arcade.Sprite):
         self.front_arm.is_on_ladder = self.is_on_ladder
         self.front_arm.idling = self.idling
         self.front_arm.sprinting = self.sprinting
-        self.front_arm.firing = True
 
         self.front_arm.character_face_direction = self.character_face_direction
+        self.firing = self.front_arm.firing
 
         if self.equipped_one_handed:
             self.front_arm.center_y = self.center_y + (15 * c.PIXEL_SCALING)
@@ -173,16 +175,15 @@ class PlayerCharacter(arcade.Sprite):
         self.back_arm.is_on_ladder = self.is_on_ladder
         self.back_arm.idling = self.idling
         self.back_arm.sprinting = self.sprinting
+        self.back_arm.cur_texture = self.cur_texture
 
         self.back_arm.character_face_direction = self.character_face_direction
 
         self.back_arm.center_x = self.center_x
         self.back_arm.center_y = self.center_y
         self.back_arm.angle = 0
-        self.back_arm.cur_texture = self.cur_texture
 
     def update_animation(self, delta_time: float = 1 / 60):
-        self.update_appendages()
         # Figure out if we need to flip face left or right.
         if self.change_x < 0 and self.character_face_direction == c.RIGHT_FACING:
             self.character_face_direction = c.LEFT_FACING
@@ -436,7 +437,7 @@ class PlayerCharacter(arcade.Sprite):
 
             # Load textures for One-Handed weapons.
             self.one_handed_texture_pair = f.load_texture_pair_vertical_flip(f'resources/images/characters/test/front_arms'
-                                                                  f'/one_handed_arm_front_glock_17.png')
+                                                                  f'/one_handed_firing_0.png')
 
             # Load textures for going from IDLE to JUMPING.
             self.idle_to_jump_textures = []
@@ -458,8 +459,8 @@ class PlayerCharacter(arcade.Sprite):
 
             # Load textures for ONE-HANDED FIRING.
             self.one_handed_firing_textures = []
-            for i in range(5):
-                texture = f.load_texture_pair(f'resources/images/characters/test/front_arms/one_handed_firing_{i}.png')
+            for i in range(3):
+                texture = f.load_texture_pair_vertical_flip(f'resources/images/characters/test/front_arms/one_handed_firing_{i}.png')
                 self.one_handed_firing_textures.append(texture)
 
             # Set the initial texture.
@@ -472,19 +473,33 @@ class PlayerCharacter(arcade.Sprite):
             # Max speed we can rotate.
             self.rot_speed = 5
 
+        def animation_firing_one_handed(self):
+            # Fire one-handed weapon.
+            self.cur_texture += 1
+            if self.cur_texture > 4 * c.UPDATES_PER_FRAME:
+                self.cur_texture = 0
+            frame = self.cur_texture // c.UPDATES_PER_FRAME
+            direction = self.character_face_direction
+            self.texture = self.one_handed_firing_textures[frame][direction]
+            return
+
         def update_animation(self, delta_time: float = 1 / 60):
             # Equip gun
+            print(self.firing)
             if self.equipped_one_handed and not self.firing:
                 self.texture = self.one_handed_texture_pair[self.character_face_direction]
                 return
 
             # Fire one-handed weapon.
             if self.firing:
-
-                self.cur_texture += 1
                 if self.cur_texture > 4 * c.UPDATES_PER_FRAME:
                     self.cur_texture = 0
+                self.cur_texture += 1
                 frame = self.cur_texture // c.UPDATES_PER_FRAME
+                print(frame)
+                if frame >= 3:
+                    self.firing = False
+                    return
                 direction = self.character_face_direction
                 self.texture = self.one_handed_firing_textures[frame][direction]
                 return
