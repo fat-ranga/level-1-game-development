@@ -239,23 +239,15 @@ class MyGame(arcade.Window):
     def on_key_press(self, key, modifiers):
         '''Called whenever a key is pressed.'''
 
-        if key == arcade.key.W:
+        if key == arcade.key.LSHIFT:
+            self.shift_pressed = True
+        elif key == arcade.key.W:
             self.up_pressed = True
         elif key == arcade.key.S:
             self.down_pressed = True
-        # Check if we're holding down shift
-        elif key == arcade.key.A and modifiers == 1:
-            self.shift_pressed = True
-            self.left_pressed = True
         elif key == arcade.key.A:
-            self.shift_pressed = False
             self.left_pressed = True
-        # Check if we're holding down shift
-        elif key == arcade.key.D and modifiers == 1:
-            self.shift_pressed = True
-            self.right_pressed = True
         elif key == arcade.key.D:
-            self.shift_pressed = False
             self.right_pressed = True
         elif key == arcade.key.G:
             if self.player_sprite.equipped_one_handed:
@@ -273,9 +265,9 @@ class MyGame(arcade.Window):
     def on_key_release(self, key, modifiers):
         '''Called when the user releases a key.'''
 
-        #if modifiers == 1:
-        #    self.shift_pressed = False
-        if key == arcade.key.W:
+        if key == arcade.key.LSHIFT:
+            self.shift_pressed = False
+        elif key == arcade.key.W:
             self.up_pressed = False
             self.jump_needs_reset = False
         elif key == arcade.key.S:
