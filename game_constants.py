@@ -1,6 +1,6 @@
 '''
 This is where all the constants are stored.
-Import these as c for consistency.
+Import these as 'c' for consistency.
 '''
 
 # Constants.
@@ -42,3 +42,6 @@ LEFT_FACING = 1
 
 # Bullet speed, in pixels per frame.
 BULLET_SPEED = 50
+
+# Precalculated random numbers, used instead of random() for performance.
+RANDOM_NUMBERS_8 = []

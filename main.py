@@ -66,16 +66,11 @@ class MyGame(arcade.Window):
         self.mouse_position_x = 0
         self.mouse_position_y = 0
 
-        # Load sounds.
-        self.collect_coin_sound = arcade.load_sound(':resources:sounds/coin1.wav')
-        self.jump_sound = arcade.load_sound(':resources:sounds/jump1.wav')
-        self.game_over = arcade.load_sound(':resources:sounds/gameover1.wav')
-        self.glock_17_firing_sound = arcade.load_sound('resources/audio/glock_17_fire.wav')
-
         # Set background colour.
         arcade.set_background_color(arcade.color.CORNFLOWER_BLUE)
 
-        # Load all the audio.
+        # Load all of the audio into a dictionary.
+        a.add_audio_to_list()
         a.load_audio()
 
     def setup(self):
@@ -207,6 +202,7 @@ class MyGame(arcade.Window):
             elif self.physics_engine.can_jump(y_distance=10) and not self.jump_needs_reset:
                 self.player_sprite.change_y = c.PLAYER_JUMP_SPEED
                 self.jump_needs_reset = True
+                arcade.play_sound(a.sound[f'jump_{random.randint(1,2)}'])
         elif self.down_pressed and not self.up_pressed:
             if self.physics_engine.is_on_ladder():
                 self.player_sprite.change_y = -c.PLAYER_WALK_SPEED
@@ -334,7 +330,7 @@ class MyGame(arcade.Window):
 
             # Add the bullet to the appropriate lists
             self.bullet_list.append(bullet)
-            arcade.play_sound(self.glock_17_firing_sound)
+            arcade.play_sound(a.sound['glock_17_fire'])
 
     def on_resize(self, width, height):
         '''This method is automatically called when the window is resized.'''

@@ -1,6 +1,6 @@
 '''
 Player character classes and functions.
-Import these as p for consistency.
+Import these as 'p' for consistency.
 
 Organisation:
 
@@ -18,6 +18,7 @@ from pyglet.gl import GL_NEAREST
 import math
 import game_constants as c
 import game_functions as f
+import game_audio as a
 
 
 class PlayerCharacter(arcade.Sprite):
@@ -234,8 +235,11 @@ class PlayerCharacter(arcade.Sprite):
         if self.sprinting:
             # RUNNING animation.
             self.cur_texture += 1
+            if self.cur_texture == 2 * c.UPDATES_PER_FRAME:
+                arcade.play_sound(a.sound[f'run_grass_{random.randint(1, 8)}'])
             if self.cur_texture > 4 * c.UPDATES_PER_FRAME:
                 self.cur_texture = 0
+                arcade.play_sound(a.sound[f'run_grass_{random.randint(1, 8)}'])
             frame = self.cur_texture // c.UPDATES_PER_FRAME
             direction = self.character_face_direction
             self.texture = self.run_textures[frame][direction]
@@ -244,8 +248,11 @@ class PlayerCharacter(arcade.Sprite):
         else:
             # WALKING animation.
             self.cur_texture += 1
+            if self.cur_texture == 4 * c.UPDATES_PER_FRAME:
+                arcade.play_sound(a.sound[f'walk_grass_{random.randint(1,8)}'])
             if self.cur_texture > 8 * c.UPDATES_PER_FRAME:
                 self.cur_texture = 0
+                arcade.play_sound(a.sound[f'walk_grass_{random.randint(1,8)}'])
             frame = self.cur_texture // c.UPDATES_PER_FRAME
             direction = self.character_face_direction
             self.texture = self.walk_textures[frame][direction]
@@ -485,7 +492,6 @@ class PlayerCharacter(arcade.Sprite):
 
         def update_animation(self, delta_time: float = 1 / 60):
             # Equip gun
-            print(self.firing)
             if self.equipped_one_handed and not self.firing:
                 self.texture = self.one_handed_texture_pair[self.character_face_direction]
                 return
@@ -496,7 +502,6 @@ class PlayerCharacter(arcade.Sprite):
                     self.cur_texture = 0
                 self.cur_texture += 1
                 frame = self.cur_texture // c.UPDATES_PER_FRAME
-                print(frame)
                 if frame >= 3:
                     self.firing = False
                     return
