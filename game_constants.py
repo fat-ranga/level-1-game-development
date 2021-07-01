@@ -1,11 +1,12 @@
 '''
 This is where all the constants are stored.
-Import these as 'c' for consistency.
+
+Import this as 'c' for consistency.
 '''
 
 # Constants.
-SCREEN_WIDTH = 1280
-SCREEN_HEIGHT = 720
+SCREEN_WIDTH = 1920
+SCREEN_HEIGHT = 1080
 SCREEN_TITLE = 'Game'
 WORLD_BOTTOM = -200
 
@@ -28,10 +29,10 @@ UPDATES_PER_FRAME = 10
 
 # How many pixels to keep as a minimum margin between
 # the character and the edge of the screen.
-LEFT_VIEWPORT_MARGIN = 300
-RIGHT_VIEWPORT_MARGIN = 300
-BOTTOM_VIEWPORT_MARGIN = 150
-TOP_VIEWPORT_MARGIN = 100
+LEFT_VIEWPORT_MARGIN = SCREEN_WIDTH // 2 + 50
+RIGHT_VIEWPORT_MARGIN = SCREEN_WIDTH // 2 - 50
+BOTTOM_VIEWPORT_MARGIN = SCREEN_HEIGHT // 2 - 100
+TOP_VIEWPORT_MARGIN = SCREEN_HEIGHT // 2 + 100
 
 PLAYER_START_X = 250
 PLAYER_START_Y = 2000

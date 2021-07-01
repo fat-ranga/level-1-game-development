@@ -2,7 +2,7 @@
 For all of the game's audio files, these are all loaded
 into the game using the load_audio function.
 
-Import these as 'a' for consistency
+Import this as 'a' for consistency.
 '''
 import arcade
 
@@ -53,4 +53,3 @@ sound = {}
 def load_audio():
     for i in audio_list:
         sound[f'{i}'.format(i)] = arcade.load_sound(f'resources/audio/{i}.wav')
-    print(sound)

@@ -1,6 +1,6 @@
 '''
 Player character classes and functions.
-Import these as 'p' for consistency.
+Import this as 'p' for consistency.
 
 Organisation:
 
@@ -185,6 +185,7 @@ class PlayerCharacter(arcade.Sprite):
         self.back_arm.angle = 0
 
     def update_animation(self, delta_time: float = 1 / 60):
+        self.update_appendages()
         # Figure out if we need to flip face left or right.
         if self.change_x < 0 and self.character_face_direction == c.RIGHT_FACING:
             self.character_face_direction = c.LEFT_FACING
@@ -241,6 +242,7 @@ class PlayerCharacter(arcade.Sprite):
                 self.cur_texture = 0
                 arcade.play_sound(a.sound[f'run_grass_{random.randint(1, 8)}'])
             frame = self.cur_texture // c.UPDATES_PER_FRAME
+            print(f'body {frame}')
             direction = self.character_face_direction
             self.texture = self.run_textures[frame][direction]
             return
@@ -340,8 +342,9 @@ class PlayerCharacter(arcade.Sprite):
             if self.sprinting:
                 # RUNNING animation.
                 frame = self.cur_texture // c.UPDATES_PER_FRAME
+                print(f'leg {frame}')
                 direction = self.character_face_direction
-                self.texture = self.run_textures[frame][direction]
+                self.texture = self.run_textures[frame][direction] # TODO: Fix list index out of range issue, add safeguard for that.
                 return
 
             else:
@@ -529,6 +532,7 @@ class PlayerCharacter(arcade.Sprite):
             if self.sprinting:
                 # RUNNING animation.
                 frame = self.cur_texture // c.UPDATES_PER_FRAME
+                print(f'front arm {frame}')
                 direction = self.character_face_direction
                 self.texture = self.run_textures[frame][direction]
                 return

@@ -1,6 +1,7 @@
 '''
 Where all the game's general functions are stored.
-Import these as 'f' for consistency.
+
+Import this as 'f' for consistency.
 '''
 
 import arcade

@@ -20,7 +20,7 @@ class MyGame(arcade.Window):
         '''Initialiser for the game.'''
 
         # Call the parent class and set up the window.
-        super().__init__(width, height, title, resizable=True, fullscreen=False)
+        super().__init__(width, height, title, resizable=True, fullscreen=True)
 
         # Set the path to start with this program.
         file_path = os.path.dirname(os.path.abspath(__file__))
@@ -40,9 +40,10 @@ class MyGame(arcade.Window):
         # These are 'lists' that keep track of our sprites. Each sprite should
         # go into a list.
         self.coin_list = None
+        self.backgrounds = None # TODO: Make backgrounds layer show.
         self.foreground_decorations_list = None
+        self.background_decorations_list = None
         self.wall_list = None
-        self.background_list = None
         self.ladder_list = None
         self.player_list = None
         self.bullet_list = None
@@ -85,7 +86,8 @@ class MyGame(arcade.Window):
 
         # Create the Sprite lists.
         self.player_list = arcade.SpriteList()
-        self.background_list = arcade.SpriteList()
+        self.backgrounds = arcade.SpriteList()
+        self.background_decorations_list = arcade.SpriteList()
         self.foreground_decorations_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
         self.coin_list = arcade.SpriteList()
@@ -113,6 +115,10 @@ class MyGame(arcade.Window):
 
         # Names of the decorations layers, these only show sprites.
         foreground_decorations_layer_name = 'Foreground Decorations'
+        background_decorations_layer_name = 'Background Decorations'
+
+        # Name of the parallax environment background layer.
+        backgrounds_layer_name = 'Backgrounds'
         
         # Map name.
         map_name = f'resources/maps/test.tmx'
@@ -123,6 +129,11 @@ class MyGame(arcade.Window):
         # Calculate the right edge of the my_map in pixels.
         self.end_of_map = my_map.map_size.width * c.GRID_PIXEL_SIZE
 
+        # Environment backgrounds.
+        self.backgrounds = arcade.tilemap.process_layer(my_map, backgrounds_layer_name,
+                                                        c.PIXEL_SCALING,
+                                                        use_spatial_hash=False)
+
         # Platforms.
         self.wall_list = arcade.tilemap.process_layer(my_map,
                                                       walls_layer_name,
@@ -130,16 +141,16 @@ class MyGame(arcade.Window):
                                                       use_spatial_hash=True)
         # Foreground decorations.
         self.foreground_decorations_list = arcade.tilemap.process_layer(my_map, foreground_decorations_layer_name,
-                                                        c.PIXEL_SCALING,
-                                                        use_spatial_hash=True)
+                                                                        c.PIXEL_SCALING,
+                                                                        use_spatial_hash=True)
+        self.background_decorations_list = arcade.tilemap.process_layer(my_map, background_decorations_layer_name,
+                                                                        c.PIXEL_SCALING,
+                                                                        use_spatial_hash=True)
         '''
         # Moving Platforms.
         moving_platforms_list = arcade.tilemap.process_layer(my_map, moving_platforms_layer_name, PIXEL_SCALING)
         for sprite in moving_platforms_list:
             self.wall_list.append(sprite)
-
-        # Background objects.
-        self.background_list = arcade.tilemap.process_layer(my_map, 'Background', PIXEL_SCALING)
 
         # Ladders.
         self.ladder_list = arcade.tilemap.process_layer(my_map, 'Ladders',
@@ -169,14 +180,13 @@ class MyGame(arcade.Window):
         arcade.start_render()
 
         # Draw our sprites.
+        self.backgrounds.draw(filter=GL_NEAREST)
+        self.background_decorations_list.draw(filter=GL_NEAREST)
         self.wall_list.draw(filter=GL_NEAREST)
         '''
-        self.background_list.draw(filter=GL_NEAREST)
         self.ladder_list.draw(filter=GL_NEAREST)
         self.coin_list.draw(filter=GL_NEAREST)
         '''
-
-        self.player_sprite.update_appendages()
         self.player_list.draw(filter=GL_NEAREST)
         self.bullet_list.draw(filter=GL_NEAREST)
         self.foreground_decorations_list.draw(filter=GL_NEAREST)
@@ -317,8 +327,8 @@ class MyGame(arcade.Window):
             bullet.change_y = math.sin(angle) * c.BULLET_SPEED
 
             # Reposition bullet
-            bullet.center_x += math.cos(angle) * (26 * c.PIXEL_SCALING)
-            bullet.center_y += math.sin(angle) * (1 * c.PIXEL_SCALING)
+            bullet.center_x += math.cos(angle) * (36 * c.PIXEL_SCALING)
+            bullet.center_y += math.sin(angle) * (36 * c.PIXEL_SCALING)
 
             # Add the bullet to the appropriate lists
             self.bullet_list.append(bullet)
@@ -333,15 +343,6 @@ class MyGame(arcade.Window):
 
     def on_update(self, delta_time):
         '''Movement and game logic.'''
-        '''
-        # Make sure that the legs of the player sprite have the proper texture before drawing.
-        if self.player_sprite.legs.cur_texture == self.player_sprite.cur_texture:
-            if self.player_sprite.legs.character_face_direction == self.player_sprite.character_face_direction:
-                # Make sure front arm has proper texture.
-                if self.player_sprite.front_arm.cur_texture == self.player_sprite.cur_texture or self.player_sprite.equipped_any:
-                    # Make sure back arm has proper texture.
-                    if self.player_sprite.back_arm.cur_texture == self.player_sprite.cur_texture or self.player_sprite.equipped_any:
-                        self.player_list.update_animation(delta_time)'''
 
         if self.player_sprite.center_y < c.WORLD_BOTTOM:
             self.setup()
@@ -371,7 +372,6 @@ class MyGame(arcade.Window):
         self.player_list.update_animation(delta_time)
 
         self.coin_list.update_animation(delta_time)
-        self.background_list.update_animation(delta_time)
 
         # Update walls, used with moving platforms.
         self.wall_list.update()
