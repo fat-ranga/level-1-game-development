@@ -21,7 +21,7 @@ class MyGame(arcade.Window):
         '''Initialiser for the game.'''
 
         # Call the parent class and set up the window.
-        super().__init__(width, height, title, resizable=True, fullscreen=True)
+        super().__init__(width, height, title, resizable=True, fullscreen=False)
 
         # Set the path to start with this program.
         file_path = os.path.dirname(os.path.abspath(__file__))
