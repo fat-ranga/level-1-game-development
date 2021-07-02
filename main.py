@@ -11,6 +11,7 @@ import game_constants as c
 import game_player as p
 import game_functions as f
 import game_audio as a
+import game_backgrounds as b
 
 
 class MyGame(arcade.Window):
@@ -40,7 +41,7 @@ class MyGame(arcade.Window):
         # These are 'lists' that keep track of our sprites. Each sprite should
         # go into a list.
         self.coin_list = None
-        self.backgrounds = None # TODO: Make backgrounds layer show.
+        self.backgrounds_list = None
         self.foreground_decorations_list = None
         self.background_decorations_list = None
         self.wall_list = None
@@ -50,6 +51,9 @@ class MyGame(arcade.Window):
 
         # Player sprite variables. Body, legs etc.
         self.player_sprite = None
+
+        # Our background sprites.
+        self.test_background = None
 
         # Our 'physics' engine.
         self.physics_engine = None
@@ -86,7 +90,7 @@ class MyGame(arcade.Window):
 
         # Create the Sprite lists.
         self.player_list = arcade.SpriteList()
-        self.backgrounds = arcade.SpriteList()
+        self.backgrounds_list = arcade.SpriteList()
         self.background_decorations_list = arcade.SpriteList()
         self.foreground_decorations_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
@@ -117,9 +121,6 @@ class MyGame(arcade.Window):
         foreground_decorations_layer_name = 'Foreground Decorations'
         background_decorations_layer_name = 'Background Decorations'
 
-        # Name of the parallax environment background layer.
-        backgrounds_layer_name = 'Backgrounds'
-        
         # Map name.
         map_name = f'resources/maps/test.tmx'
 
@@ -129,10 +130,12 @@ class MyGame(arcade.Window):
         # Calculate the right edge of the my_map in pixels.
         self.end_of_map = my_map.map_size.width * c.GRID_PIXEL_SIZE
 
-        # Environment backgrounds.
-        self.backgrounds = arcade.tilemap.process_layer(my_map, backgrounds_layer_name,
-                                                        c.PIXEL_SCALING,
-                                                        use_spatial_hash=False)
+        # Parallax environment backgrounds.
+        self.test_background = b.Background()
+
+        self.test_background.follow_x = self.player_sprite.center_x
+        self.test_background.follow_y = self.player_sprite.center_y
+        self.backgrounds_list.append(self.test_background)
 
         # Platforms.
         self.wall_list = arcade.tilemap.process_layer(my_map,
@@ -180,7 +183,7 @@ class MyGame(arcade.Window):
         arcade.start_render()
 
         # Draw our sprites.
-        self.backgrounds.draw(filter=GL_NEAREST)
+        self.backgrounds_list.draw(filter=GL_NEAREST)
         self.background_decorations_list.draw(filter=GL_NEAREST)
         self.wall_list.draw(filter=GL_NEAREST)
         '''
@@ -420,6 +423,12 @@ class MyGame(arcade.Window):
             # If the bullet flies out of the map, remove it.
             # if bullet.bottom > MAP_HEIGHT or bullet.top < MAP_HEIGHT or bullet.right < MAP_WIDTH or bullet.left > MAP_WIDTH:
         #     bullet.remove_from_sprite_lists()
+
+        # Update the environment backgrounds.
+        self.test_background.follow_x = self.player_sprite.center_x
+        self.test_background.follow_y = self.player_sprite.center_y
+        self.backgrounds_list.update()
+
 
         # Track if we need to change the viewport.
         changed_viewport = False

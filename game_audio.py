@@ -46,7 +46,6 @@ def add_audio_to_list():
     return audio_list
 
 
-# TODO: This thing with the loading of the audio.
 sound = {}
 
 

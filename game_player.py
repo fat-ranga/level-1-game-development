@@ -96,8 +96,6 @@ class PlayerCharacter(arcade.Sprite):
 
         # Set up the legs, the two arms sprites, and the head.
         self.legs = self.PlayerCharacterLegs()
-        self.legs.idling = self.idling
-
         self.head = self.PlayerCharacterHead()
         self.front_arm = self.PlayerCharacterFrontArm()
         self.back_arm = self.PlayerCharacterBackArm()
