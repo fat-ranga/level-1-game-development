@@ -50,7 +50,8 @@ class PlayerCharacter(arcade.Sprite):
         # Whether the player has a gun or not.
         self.equipped_one_handed = False
 
-        # --- Load Textures --- #
+        # --- Load Textures --- # TODO: Automatically add extra frame that is copy of the last frame to every
+        #                         TODO: animation list. This will stop the last frame from flickering when played.
 
         # Load textures for IDLE standing.
         self.idle_texture_pair = f.load_texture_pair(f'resources/images/characters/test/body/idle_to_walk_0.png')
@@ -207,7 +208,7 @@ class PlayerCharacter(arcade.Sprite):
         if self.change_y > 0 and not self.is_on_ladder:
             self.jumping = True
             self.cur_texture += 1
-            if self.cur_texture > 15 * c.UPDATES_PER_FRAME:
+            if self.cur_texture > 15 * c.UPDATES_PER_FRAME: # TODO: Change all these to the actual length of the list.
                 self.cur_texture = 0
             frame = self.cur_texture // c.UPDATES_PER_FRAME
             direction = self.character_face_direction

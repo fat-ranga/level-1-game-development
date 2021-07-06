@@ -27,3 +27,6 @@ def load_texture_pair_vertical_flip(filename):
         arcade.load_texture(filename),
         arcade.load_texture(filename, flipped_vertically=True)
     ]
+
+# TODO: end_of_animation function to detect the end of an animation.
+# TODO: Make get_offset function for each frame, which will somehow have a value attached. List, perhaps?
