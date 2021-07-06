@@ -155,7 +155,7 @@ class PlayerCharacter(arcade.Sprite):
         self.firing = self.front_arm.firing
 
         if self.equipped_one_handed:
-            self.front_arm.center_y = self.center_y + (15 * c.PIXEL_SCALING)
+            self.front_arm.center_y = self.center_y + (17 * c.PIXEL_SCALING)
             self.front_arm.update_rotation(dest_x=self.mouse_pos_x,
                                            dest_y=self.mouse_pos_y)
             if self.character_face_direction == c.RIGHT_FACING:
@@ -240,7 +240,6 @@ class PlayerCharacter(arcade.Sprite):
                 self.cur_texture = 0
                 arcade.play_sound(a.sound[f'run_grass_{random.randint(1, 8)}'])
             frame = self.cur_texture // c.UPDATES_PER_FRAME
-            print(f'body {frame}')
             direction = self.character_face_direction
             self.texture = self.run_textures[frame][direction]
             return
@@ -249,10 +248,10 @@ class PlayerCharacter(arcade.Sprite):
             # WALKING animation.
             self.cur_texture += 1
             if self.cur_texture == 4 * c.UPDATES_PER_FRAME:
-                arcade.play_sound(a.sound[f'walk_grass_{random.randint(1,8)}'])
+                arcade.play_sound(a.sound[f'walk_grass_{random.randint(1, 8)}'])
             if self.cur_texture > 8 * c.UPDATES_PER_FRAME:
                 self.cur_texture = 0
-                arcade.play_sound(a.sound[f'walk_grass_{random.randint(1,8)}'])
+                arcade.play_sound(a.sound[f'walk_grass_{random.randint(1, 8)}'])
             frame = self.cur_texture // c.UPDATES_PER_FRAME
             direction = self.character_face_direction
             self.texture = self.walk_textures[frame][direction]
@@ -340,9 +339,11 @@ class PlayerCharacter(arcade.Sprite):
             if self.sprinting:
                 # RUNNING animation.
                 frame = self.cur_texture // c.UPDATES_PER_FRAME
-                print(f'leg {frame}')
                 direction = self.character_face_direction
-                self.texture = self.run_textures[frame][direction] # TODO: Fix list index out of range issue, add safeguard for that.
+                try:
+                    self.texture = self.run_textures[frame][direction]
+                except:
+                    self.texture = self.run_textures[0][direction]
                 return
 
             else:
@@ -438,14 +439,17 @@ class PlayerCharacter(arcade.Sprite):
             # --- Load Textures --- #
 
             # Load textures for idle standing.
-            self.idle_texture_pair = f.load_texture_pair(f'resources/images/characters/test/front_arms/idle_to_walk_0.png')
+            self.idle_texture_pair = f.load_texture_pair(
+                f'resources/images/characters/test/front_arms/idle_to_walk_0.png')
 
             # Load textures for climbing.
-            self.climbing_textures = f.load_texture_pair(f'resources/images/characters/test/front_arms/idle_to_walk_0.png')
+            self.climbing_textures = f.load_texture_pair(
+                f'resources/images/characters/test/front_arms/idle_to_walk_0.png')
 
             # Load textures for One-Handed weapons.
-            self.one_handed_texture_pair = f.load_texture_pair_vertical_flip(f'resources/images/characters/test/front_arms'
-                                                                  f'/one_handed_firing_0.png')
+            self.one_handed_texture_pair = f.load_texture_pair_vertical_flip(
+                f'resources/images/characters/test/front_arms'
+                f'/one_handed_firing_0.png')
 
             # Load textures for going from IDLE to JUMPING.
             self.idle_to_jump_textures = []
@@ -468,7 +472,8 @@ class PlayerCharacter(arcade.Sprite):
             # Load textures for ONE-HANDED FIRING.
             self.one_handed_firing_textures = []
             for i in range(3):
-                texture = f.load_texture_pair_vertical_flip(f'resources/images/characters/test/front_arms/one_handed_firing_{i}.png')
+                texture = f.load_texture_pair_vertical_flip(
+                    f'resources/images/characters/test/front_arms/one_handed_firing_{i}.png')
                 self.one_handed_firing_textures.append(texture)
 
             # Set the initial texture.
@@ -530,9 +535,11 @@ class PlayerCharacter(arcade.Sprite):
             if self.sprinting:
                 # RUNNING animation.
                 frame = self.cur_texture // c.UPDATES_PER_FRAME
-                print(f'front arm {frame}')
                 direction = self.character_face_direction
-                self.texture = self.run_textures[frame][direction]
+                try:
+                    self.texture = self.run_textures[frame][direction]
+                except:
+                    self.texture = self.run_textures[0][direction]
                 return
 
             else:
@@ -643,7 +650,10 @@ class PlayerCharacter(arcade.Sprite):
                 # RUNNING animation.
                 frame = self.cur_texture // c.UPDATES_PER_FRAME
                 direction = self.character_face_direction
-                self.texture = self.run_textures[frame][direction]
+                try:
+                    self.texture = self.run_textures[frame][direction]
+                except:
+                    self.texture = self.run_textures[0][direction]
                 return
 
             else:
