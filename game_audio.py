@@ -6,7 +6,13 @@ Import this as 'a' for consistency.
 '''
 import arcade
 
+# Contains the names of all the audio files in the game
+# once the 'add_audio_to_list()' is called.
 audio_list = []
+
+# Dictionary that contains the names of the sounds and their respective audio files.
+# This is what is accessed whenever a sound is called.
+sound = {}
 
 
 def add_audio_to_list():
@@ -46,9 +52,7 @@ def add_audio_to_list():
     return audio_list
 
 
-sound = {}
-
-
 def load_audio():
     for i in audio_list:
+        # Load the audio into the dictionary.
         sound[f'{i}'.format(i)] = arcade.load_sound(f'resources/audio/{i}.wav')

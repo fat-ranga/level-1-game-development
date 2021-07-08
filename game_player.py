@@ -47,11 +47,16 @@ class PlayerCharacter(arcade.Sprite):
         # Whether the player is armed in any sort of way.
         self.equipped_any = False
 
-        # Whether the player has a gun or not.
+        # Whether the player has a one-handed gun or not.
         self.equipped_one_handed = False
 
+        # Whether the player has a two-handed gun or not.
+        self.equipped_two_handed = False
         # --- Load Textures --- # TODO: Automatically add extra frame that is copy of the last frame to every
         #                         TODO: animation list. This will stop the last frame from flickering when played.
+
+        # The name of the texture we are currently displaying. Used as key for offset dictionaries.
+        self.cur_texture_name = 'idle_to_walk_0'
 
         # Load textures for IDLE standing.
         self.idle_texture_pair = f.load_texture_pair(f'resources/images/characters/test/body/idle_to_walk_0.png')
@@ -110,7 +115,7 @@ class PlayerCharacter(arcade.Sprite):
         self.mouse_pos_x = x
         self.mouse_pos_y = y
 
-    def update_appendages(self, delta_time: float = 1 / 60):
+    def update_appendages(self):
         '''Positions the sprites and updates variables such as jumping and idling for the legs.
             Makes the cur_texture of all the appendages the same as the player sprite's.
         '''
@@ -118,6 +123,8 @@ class PlayerCharacter(arcade.Sprite):
         # Set type of gun equipped.
         self.front_arm.equipped_one_handed = self.equipped_one_handed
         self.back_arm.equipped_one_handed = self.equipped_one_handed
+        self.front_arm.equipped_two_handed = self.equipped_two_handed
+        self.back_arm.equipped_two_handed = self.equipped_two_handed
 
         # Legs.
         self.legs.center_x = self.center_x
@@ -133,8 +140,19 @@ class PlayerCharacter(arcade.Sprite):
         self.legs.character_face_direction = self.character_face_direction
 
         # Head.
-        self.head.center_x = self.center_x
-        self.head.center_y = self.center_y + (25 * c.PIXEL_SCALING)
+        #self.head.center_x = self.center_x
+        #self.head.center_y = self.center_y + (25 * c.PIXEL_SCALING)
+        #self.head.center_x = self.center_x
+        #self.head.center_y = self.center_y# + (25 * c.PIXEL_SCALING)
+        # Head.
+        #try:
+        if self.character_face_direction == c.RIGHT_FACING:
+            self.head.center_x = self.center_x + (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING)
+        else:
+            self.head.center_x = self.center_x + (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING)
+        self.head.center_y = self.center_y + (f.get_head_offset_y(self.cur_texture_name) * c.PIXEL_SCALING)
+        #except:
+       #     print('YOU RANGA! THERE IS NO HEAD OFFSET OR KEY OR SOMETHING. IT DIDN\'T WORK!')
 
         self.head.jumping = self.jumping
         self.head.climbing = self.climbing
@@ -211,6 +229,7 @@ class PlayerCharacter(arcade.Sprite):
             if self.cur_texture > 15 * c.UPDATES_PER_FRAME: # TODO: Change all these to the actual length of the list.
                 self.cur_texture = 0
             frame = self.cur_texture // c.UPDATES_PER_FRAME
+            self.cur_texture_name = f'idle_to_jump_{frame}' # CUM
             direction = self.character_face_direction
             self.texture = self.idle_to_jump_textures[frame][direction]
             return
@@ -220,6 +239,7 @@ class PlayerCharacter(arcade.Sprite):
             if self.cur_texture > 15 * c.UPDATES_PER_FRAME:
                 self.cur_texture = 0
             frame = self.cur_texture // c.UPDATES_PER_FRAME
+            self.cur_texture_name = f'idle_to_jump_{frame}'  # CUM
             direction = self.character_face_direction
             self.texture = self.idle_to_jump_textures[frame][direction]
             return
@@ -229,6 +249,7 @@ class PlayerCharacter(arcade.Sprite):
         if self.change_x == 0 and self.change_y == 0:
             self.idling = True
             self.texture = self.idle_texture_pair[self.character_face_direction]
+            self.cur_texture_name = f'idle_to_walk_0' # CUM
             return
 
         self.idling = False
@@ -241,6 +262,7 @@ class PlayerCharacter(arcade.Sprite):
                 self.cur_texture = 0
                 arcade.play_sound(a.sound[f'run_grass_{random.randint(1, 8)}'])
             frame = self.cur_texture // c.UPDATES_PER_FRAME
+            self.cur_texture_name = f'run_{frame}'  # CUM
             direction = self.character_face_direction
             self.texture = self.run_textures[frame][direction]
             return
@@ -254,6 +276,7 @@ class PlayerCharacter(arcade.Sprite):
                 self.cur_texture = 0
                 arcade.play_sound(a.sound[f'walk_grass_{random.randint(1, 8)}'])
             frame = self.cur_texture // c.UPDATES_PER_FRAME
+            self.cur_texture_name = f'walk_{frame}'  # CUM
             direction = self.character_face_direction
             self.texture = self.walk_textures[frame][direction]
             return
@@ -341,6 +364,7 @@ class PlayerCharacter(arcade.Sprite):
                 # RUNNING animation.
                 frame = self.cur_texture // c.UPDATES_PER_FRAME
                 direction = self.character_face_direction
+                # This is to stop the 'list out of bounds error'.
                 try:
                     self.texture = self.run_textures[frame][direction]
                 except:
@@ -428,6 +452,7 @@ class PlayerCharacter(arcade.Sprite):
             self.scale = c.PIXEL_SCALING
             self.cur_texture = 0
             self.equipped_one_handed = False
+            self.equipped_two_handed = False
 
             # Track our state.
             self.jumping = False
@@ -537,6 +562,7 @@ class PlayerCharacter(arcade.Sprite):
                 # RUNNING animation.
                 frame = self.cur_texture // c.UPDATES_PER_FRAME
                 direction = self.character_face_direction
+                # This is to stop the 'list out of bounds error'.
                 try:
                     self.texture = self.run_textures[frame][direction]
                 except:
@@ -583,6 +609,7 @@ class PlayerCharacter(arcade.Sprite):
             self.scale = c.PIXEL_SCALING
             self.cur_texture = 0
             self.equipped_one_handed = False
+            self.equipped_two_handed = False
 
             # Track our state.
             self.jumping = False
@@ -651,6 +678,7 @@ class PlayerCharacter(arcade.Sprite):
                 # RUNNING animation.
                 frame = self.cur_texture // c.UPDATES_PER_FRAME
                 direction = self.character_face_direction
+                # This is to stop the 'list out of bounds error'.
                 try:
                     self.texture = self.run_textures[frame][direction]
                 except:

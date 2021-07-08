@@ -78,6 +78,10 @@ class MyGame(arcade.Window):
         a.add_audio_to_list()
         a.load_audio()
 
+        # Load all of the positions for the head from the different animation frames.
+        f.add_frames_to_list()
+        f.load_frames_and_positions()
+
     def setup(self):
         '''Set up the game here. Call this function to restart the game.'''
 
@@ -292,11 +296,16 @@ class MyGame(arcade.Window):
 
         self.process_keychange()
 
+    def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
+        '''Called whenever the user uses the scroll on the mouse.
+            Used mostly for weapon selection for the player.'''
+        pass
+
     def on_mouse_press(self, x, y, button, modifiers):
         '''Called whenever the mouse button is clicked.'''
 
         # Create a bullet
-        if self.player_sprite.equipped_one_handed:
+        if self.player_sprite.equipped_one_handed and button == arcade.MOUSE_BUTTON_LEFT:
             self.player_sprite.front_arm.firing = True
             bullet = arcade.Sprite('resources/images/effects/bullet_projectile.png', c.PIXEL_SCALING)
             bullet.set_hit_box([[-2, -2], [-2, 2], [2, 2], [2, -2]])
@@ -326,8 +335,8 @@ class MyGame(arcade.Window):
 
             # Taking into account the angle, calculate our change_x
             # and change_y. Velocity is how fast the bullet travels.
-            bullet.change_x = math.cos(angle) * c.BULLET_SPEED
-            bullet.change_y = math.sin(angle) * c.BULLET_SPEED
+            bullet.change_x = (math.cos(angle) * c.BULLET_SPEED) + self.player_sprite.change_x # Account for momentum.
+            bullet.change_y = (math.sin(angle) * c.BULLET_SPEED)
 
             # Reposition bullet
             bullet.center_x += math.cos(angle) * (36 * c.PIXEL_SCALING)
