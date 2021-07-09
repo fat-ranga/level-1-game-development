@@ -139,20 +139,24 @@ class PlayerCharacter(arcade.Sprite):
 
         self.legs.character_face_direction = self.character_face_direction
 
-        # Head.
-        #self.head.center_x = self.center_x
-        #self.head.center_y = self.center_y + (25 * c.PIXEL_SCALING)
-        #self.head.center_x = self.center_x
-        #self.head.center_y = self.center_y# + (25 * c.PIXEL_SCALING)
-        # Head.
-        #try:
+        # Position the head.
         if self.character_face_direction == c.RIGHT_FACING:
-            self.head.center_x = self.center_x + (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING)
+            if self.head.angle >= -90 and self.head.angle <= 90:
+                self.head.center_x = self.center_x + (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
+                                                        2 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+            else:
+                self.head.center_x = self.center_x + (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                                                        0 * c.PIXEL_SCALING)
+
         else:
-            self.head.center_x = self.center_x + (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING)
+            if self.head.angle >= -90 and self.head.angle <= 90:
+                self.head.center_x = self.center_x - (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
+                                                        2 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+            else:
+                self.head.center_x = self.center_x - (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                                                        0 * c.PIXEL_SCALING) # TODO: WHY ARE THEY DIFFERENT EACH TFIME AAAAGGGGGGGHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+
         self.head.center_y = self.center_y + (f.get_head_offset_y(self.cur_texture_name) * c.PIXEL_SCALING)
-        #except:
-       #     print('YOU RANGA! THERE IS NO HEAD OFFSET OR KEY OR SOMETHING. IT DIDN\'T WORK!')
 
         self.head.jumping = self.jumping
         self.head.climbing = self.climbing

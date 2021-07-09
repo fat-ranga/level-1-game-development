@@ -189,13 +189,13 @@ class MyGame(arcade.Window):
         # Draw our sprites.
         self.backgrounds_list.draw(filter=GL_NEAREST)
         self.background_decorations_list.draw(filter=GL_NEAREST)
+        self.player_list.draw(filter=GL_NEAREST)
+        self.bullet_list.draw(filter=GL_NEAREST)
         self.wall_list.draw(filter=GL_NEAREST)
         '''
         self.ladder_list.draw(filter=GL_NEAREST)
         self.coin_list.draw(filter=GL_NEAREST)
         '''
-        self.player_list.draw(filter=GL_NEAREST)
-        self.bullet_list.draw(filter=GL_NEAREST)
         self.foreground_decorations_list.draw(filter=GL_NEAREST)
 
         # Draw our score on the screen, scrolling it with the viewport.

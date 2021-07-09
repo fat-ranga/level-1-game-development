@@ -52,7 +52,7 @@ head_positions_idle_to_walk = [[1, 23], [1, 23], [1, 23], [1, 22], [1, 21], [2, 
 
 head_positions_run = [[9, 23], [10, 20], [16, 23], [8, 24], [8, 22]]
 
-head_positions_walk = [[2, 24], [2, 25], [2, 24], [2, 22], [2, 24], [2, 25], [2, 24], [2, 22], [2, 23]]
+head_positions_walk = [[-2, 24], [-2, 25], [-2, 24], [-2, 22], [-2, 24], [-2, 25], [-2, 24], [-2, 22], [-2, 23]]
 
 
 def add_frames_to_list():
@@ -85,6 +85,7 @@ def add_frames_to_list():
 
 
 def load_frames_and_positions():
+    # For all the frames of the animations.
     counter = -1
     for i in frame_list:
         counter += 1
