@@ -14,6 +14,12 @@ import game_player as p
 import game_functions as f
 import game_audio as a
 
+# Offsets for the gun positions in the firing frames.
+one_handed_offset_x = 0
+one_handed_offset_y = 0
+
+two_handed_offset_x = 0
+two_handed_offset_y = 0
 
 class Weapon(arcade.Sprite):
     '''The base weapon class'''
@@ -36,11 +42,11 @@ class Weapon(arcade.Sprite):
         self.offset_x = 0
         self.offset_y = 0
 
-        # Positions it moves according to. Set these to the player front-arm or back-arm co-ordinates.
+        # Positions it moves according to. Set these to the sprite front-arm or back-arm co-ordinates.
         self.follow_x = None
         self.follow_y = None
 
     def update(self):
-        # Go to wherever the player is.
+        # Go to wherever the sprite is.
         self.center_x = self.follow_x + (self.offset_x * c.PIXEL_SCALING)
         self.center_y = self.follow_y + (self.offset_y * c.PIXEL_SCALING)

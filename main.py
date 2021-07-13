@@ -14,14 +14,14 @@ import game_audio as a
 import game_backgrounds as b
 
 
-class MyGame(arcade.Window):
+class GameView(arcade.View):
     '''Main application class.'''
 
-    def __init__(self, width, height, title):
+    def __init__(self):
         '''Initialiser for the game.'''
 
         # Call the parent class and set up the window.
-        super().__init__(width, height, title, resizable=True, fullscreen=False)
+        super().__init__()
 
         # Set the path to start with this program.
         file_path = os.path.dirname(os.path.abspath(__file__))
@@ -219,7 +219,7 @@ class MyGame(arcade.Window):
             elif self.physics_engine.can_jump(y_distance=10) and not self.jump_needs_reset:
                 self.player_sprite.change_y = c.PLAYER_JUMP_SPEED
                 self.jump_needs_reset = True
-                arcade.play_sound(a.sound[f'jump_{random.randint(1,2)}'])
+                arcade.play_sound(a.sound[f'jump_{random.randint(1, 2)}'])
         elif self.down_pressed and not self.up_pressed:
             if self.physics_engine.is_on_ladder():
                 self.player_sprite.change_y = -c.PLAYER_WALK_SPEED
@@ -335,7 +335,7 @@ class MyGame(arcade.Window):
 
             # Taking into account the angle, calculate our change_x
             # and change_y. Velocity is how fast the bullet travels.
-            bullet.change_x = (math.cos(angle) * c.BULLET_SPEED) + self.player_sprite.change_x # Account for momentum.
+            bullet.change_x = (math.cos(angle) * c.BULLET_SPEED) + self.player_sprite.change_x  # Account for momentum.
             bullet.change_y = (math.sin(angle) * c.BULLET_SPEED)
 
             # Reposition bullet
@@ -345,13 +345,6 @@ class MyGame(arcade.Window):
             # Add the bullet to the appropriate lists
             self.bullet_list.append(bullet)
             arcade.play_sound(a.sound['glock_17_fire'])
-
-    def on_resize(self, width, height):
-        '''This method is automatically called when the window is resized.'''
-
-        # Call the parent. Failing to do this will mess up the coordinates,
-        # and default to 0,0 at the centre and the edges being -1 to 1.
-        super().on_resize(width, height)
 
     def on_update(self, delta_time):
         '''Movement and game logic.'''
@@ -438,7 +431,6 @@ class MyGame(arcade.Window):
         self.test_background.follow_y = self.player_sprite.center_y
         self.backgrounds_list.update()
 
-
         # Track if we need to change the viewport.
         changed_viewport = False
 
@@ -488,10 +480,110 @@ class MyGame(arcade.Window):
         self.mouse_position_y = y
 
 
+class MainMenuView(arcade.View):
+    '''The main menu that shows when you start the game.'''
+
+    def __init__(self):
+        '''This is run once when we switch to this view.'''
+        super().__init__()
+
+        # Reset the viewport, necessary if we have a scrolling game and we need
+        # to reset the viewport back to the start so we can see what we draw.
+        arcade.set_viewport(0, c.SCREEN_WIDTH - 1, 0, c.SCREEN_HEIGHT - 1)
+
+        self.main_menu_list = arcade.SpriteList()
+        self.menu_texture = arcade.load_texture('resources/images/ui/main_menu.png')
+        self.main_menu_image = None
+
+    def on_show(self):
+        '''This is run once when we switch to this view.'''
+
+        self.main_menu_image = arcade.Sprite()
+        self.main_menu_image.texture = self.menu_texture
+        self.main_menu_image.scale = c.PIXEL_SCALING
+        self.main_menu_image.center_x = c.SCREEN_WIDTH / 2
+        self.main_menu_image.center_y = c.SCREEN_HEIGHT / 2
+        self.main_menu_list.append(self.main_menu_image)
+        # Reset the viewport, necessary if we have a scrolling game and we need
+        # to reset the viewport back to the start so we can see what we draw.
+        arcade.set_viewport(0, c.SCREEN_WIDTH - 1, 0, c.SCREEN_HEIGHT - 1)
+
+    def on_draw(self):
+        '''Draw this view.'''
+        arcade.start_render()
+        self.main_menu_list.draw(filter=GL_NEAREST)
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        '''If the user presses the mouse button, start the intro.'''
+        intro_view = IntroView()
+        self.window.show_view(intro_view)
+
+
+class IntroView(arcade.View):
+    '''The cinematic intro that plays once the player selects 'New game'.'''
+
+    def __init__(self):
+        '''This is run once when we switch to this view.'''
+        super().__init__()
+
+        # Reset the viewport, necessary if we have a scrolling game and we need
+        # to reset the viewport back to the start so we can see what we draw.
+        arcade.set_viewport(0, c.SCREEN_WIDTH - 1, 0, c.SCREEN_HEIGHT - 1)
+
+        self.scene_list = arcade.SpriteList()
+
+        # Initial scene.
+        self.scene = 1
+        self.cur_texture = 0
+
+        # The image that is displayed
+        self.image = arcade.Sprite()
+
+        # Load textures for scene 1.
+        self.scene_1_textures = []
+        for i in range(12):
+            texture = arcade.load_texture(f'resources/images/cutscene/auckland_{i}.png')
+            self.scene_1_textures.append(texture)
+
+        self.scene_list.append(self.image)
+
+    def on_show(self):
+        '''This is run once when we switch to this view.'''
+
+        # Reset the viewport, necessary if we have a scrolling game and we need
+        # to reset the viewport back to the start so we can see what we draw.
+        arcade.set_viewport(0, c.SCREEN_WIDTH - 1, 0, c.SCREEN_HEIGHT - 1)
+
+    def on_update(self, delta_time: float):
+        '''For updating the scenes and animations.'''
+
+        if self.scene == 1:
+            self.cur_texture += 1
+            if self.cur_texture > (len(self.scene_1_textures) - 1) * c.INTRO_UPDATES_PER_FRAME:
+                self.cur_texture = 0
+            frame = self.cur_texture // c.INTRO_UPDATES_PER_FRAME
+            self.image.texture = self.scene_1_textures[frame]
+        self.image.scale = c.INTRO_SCALING
+        self.image.center_x = c.SCREEN_WIDTH / 2
+        self.image.center_y = c.SCREEN_HEIGHT / 2
+
+    def on_draw(self):
+        '''Draw this view.'''
+        arcade.start_render()
+        self.scene_list.draw(filter=GL_NEAREST)
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        '''If the user presses the mouse button, start the game.'''
+        game_view = GameView()
+        game_view.setup()
+        self.window.show_view(game_view)
+
+
 def main():
     '''Main method.'''
-    window = MyGame(c.SCREEN_WIDTH, c.SCREEN_HEIGHT, c.SCREEN_TITLE)
-    window.setup()
+    window = arcade.Window(c.SCREEN_WIDTH, c.SCREEN_HEIGHT, c.SCREEN_TITLE, resizable=False, fullscreen=True)
+    start_view = MainMenuView()
+    window.show_view(start_view)
     arcade.run()
 
 

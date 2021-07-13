@@ -29,10 +29,18 @@ def load_texture_pair_vertical_flip(filename):
     ]
 
 
+def fade_black(time, opacity):
+    '''Uses a black image to create a fading effect.'''
+    # Change opacity of this to create fading to and from black effect.
+    black_fade = arcade.Sprite()
+    black_fade.texture = 'resources/'
+    black_fade.alpha = 255 # TODO: This.
+
 # TODO: end_of_animation function to detect the end of an animation.
-# TODO: Make get_offset function for each frame, which will somehow have a value attached. List, perhaps?
+
 
 # -- PLAYER AND ENEMIES SPRITE STUFF -- #
+
 
 # List of all the names of the human sprite animation frames in the game.
 frame_list = []

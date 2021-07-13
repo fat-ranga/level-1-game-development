@@ -141,20 +141,39 @@ class PlayerCharacter(arcade.Sprite):
 
         # Position the head.
         if self.character_face_direction == c.RIGHT_FACING:
-            if self.head.angle >= -90 and self.head.angle <= 90:
-                self.head.center_x = self.center_x + (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
-                                                        2 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+            if not self.idling:
+                if self.head.angle >= -90 and self.head.angle <= 90:
+                    self.head.center_x = self.center_x + (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
+                                                            0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                else:
+                    self.head.center_x = self.center_x + (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                                                            2 * c.PIXEL_SCALING)
             else:
-                self.head.center_x = self.center_x + (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
-                                                        0 * c.PIXEL_SCALING)
+                if self.head.angle >= -90 and self.head.angle <= 90:
+                    self.head.center_x = self.center_x + (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
+                                                            2 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                else:
+                    self.head.center_x = self.center_x + (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                                                            0 * c.PIXEL_SCALING)
 
         else:
-            if self.head.angle >= -90 and self.head.angle <= 90:
-                self.head.center_x = self.center_x - (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
-                                                        2 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+            if self.idling:
+                if self.head.angle >= -90 and self.head.angle <= 90:
+                    self.head.center_x = self.center_x - (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                                                            0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                else:
+                    self.head.center_x = self.center_x - (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                                                            2 * c.PIXEL_SCALING)
             else:
-                self.head.center_x = self.center_x - (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
-                                                        0 * c.PIXEL_SCALING) # TODO: WHY ARE THEY DIFFERENT EACH TFIME AAAAGGGGGGGHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+                if self.head.angle >= -90 and self.head.angle <= 90:
+                    self.head.center_x = self.center_x - (
+                                f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
+                                                 2 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                else:
+                    self.head.center_x = self.center_x - (
+                                f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                                                 0 * c.PIXEL_SCALING)
+
 
         self.head.center_y = self.center_y + (f.get_head_offset_y(self.cur_texture_name) * c.PIXEL_SCALING)
 
@@ -233,7 +252,7 @@ class PlayerCharacter(arcade.Sprite):
             if self.cur_texture > 15 * c.UPDATES_PER_FRAME: # TODO: Change all these to the actual length of the list.
                 self.cur_texture = 0
             frame = self.cur_texture // c.UPDATES_PER_FRAME
-            self.cur_texture_name = f'idle_to_jump_{frame}' # CUM
+            self.cur_texture_name = f'idle_to_jump_{frame}'
             direction = self.character_face_direction
             self.texture = self.idle_to_jump_textures[frame][direction]
             return
@@ -243,7 +262,7 @@ class PlayerCharacter(arcade.Sprite):
             if self.cur_texture > 15 * c.UPDATES_PER_FRAME:
                 self.cur_texture = 0
             frame = self.cur_texture // c.UPDATES_PER_FRAME
-            self.cur_texture_name = f'idle_to_jump_{frame}'  # CUM
+            self.cur_texture_name = f'idle_to_jump_{frame}'
             direction = self.character_face_direction
             self.texture = self.idle_to_jump_textures[frame][direction]
             return
@@ -253,7 +272,7 @@ class PlayerCharacter(arcade.Sprite):
         if self.change_x == 0 and self.change_y == 0:
             self.idling = True
             self.texture = self.idle_texture_pair[self.character_face_direction]
-            self.cur_texture_name = f'idle_to_walk_0' # CUM
+            self.cur_texture_name = f'idle_to_walk_0'
             return
 
         self.idling = False
@@ -266,7 +285,7 @@ class PlayerCharacter(arcade.Sprite):
                 self.cur_texture = 0
                 arcade.play_sound(a.sound[f'run_grass_{random.randint(1, 8)}'])
             frame = self.cur_texture // c.UPDATES_PER_FRAME
-            self.cur_texture_name = f'run_{frame}'  # CUM
+            self.cur_texture_name = f'run_{frame}'
             direction = self.character_face_direction
             self.texture = self.run_textures[frame][direction]
             return
@@ -280,7 +299,7 @@ class PlayerCharacter(arcade.Sprite):
                 self.cur_texture = 0
                 arcade.play_sound(a.sound[f'walk_grass_{random.randint(1, 8)}'])
             frame = self.cur_texture // c.UPDATES_PER_FRAME
-            self.cur_texture_name = f'walk_{frame}'  # CUM
+            self.cur_texture_name = f'walk_{frame}'
             direction = self.character_face_direction
             self.texture = self.walk_textures[frame][direction]
             return

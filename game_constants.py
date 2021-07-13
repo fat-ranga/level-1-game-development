@@ -7,11 +7,12 @@ Import this as 'c' for consistency.
 # Constants.
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
-SCREEN_TITLE = 'Game'
+SCREEN_TITLE = 'Unexplored'
 WORLD_BOTTOM = -200
 
 # Constants used to scale our sprites from their original size.
 PIXEL_SCALING = 4
+INTRO_SCALING = 3
 UI_SCALING = 4
 SPRITE_PIXEL_SIZE = 128
 GRID_PIXEL_SIZE = PIXEL_SCALING
@@ -26,6 +27,9 @@ PLAYER_RUN_SPEED = 9.3
 GRAVITY = 0.91
 PLAYER_JUMP_SPEED = 25
 UPDATES_PER_FRAME = 10
+
+# Cinematic intro constants.
+INTRO_UPDATES_PER_FRAME = 10
 
 # How many pixels to keep as a minimum margin between
 # the character and the edge of the screen.
