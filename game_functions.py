@@ -29,12 +29,57 @@ def load_texture_pair_vertical_flip(filename):
     ]
 
 
-def fade_black(time, opacity):
+class BlackScreenFade(arcade.Sprite):
     '''Uses a black image to create a fading effect.'''
-    # Change opacity of this to create fading to and from black effect.
-    black_fade = arcade.Sprite()
-    black_fade.texture = 'resources/'
-    black_fade.alpha = 255 # TODO: This.
+
+    def __init__(self):
+        # Set up parent class.
+        super().__init__()
+
+        self.fade = False
+        self.change_opacity = 0
+        self.cur_alpha = 255
+        self.counter = 0
+        self.alpha = 0
+        self.texture = arcade.load_texture('resources/images/ui/black_fade.png')
+        self.scale = c.PIXEL_SCALING
+        self.center_x = c.SCREEN_WIDTH / 2
+        self.center_y = c.SCREEN_HEIGHT / 2
+        self.increasing = False
+
+    def change_fade(self, target, change):
+        '''Changes the opacity over a set amount of time.'''
+        # Change opacity of this to create fading to and from black effect.
+
+        if target > self.alpha:
+            self.increasing = True
+        else:
+            self.increasing = False
+
+        if self.increasing:
+            try:
+                if self.alpha < target:
+                    self.alpha += change
+                else:
+                    self.fade = False
+                    return
+            except:
+                self.alpha = 255
+                self.fade = False
+        else:
+            try:
+                if self.alpha > target:
+                    self.alpha -= change
+                else:
+                    self.fade = False
+                    return
+            except:
+                self.alpha = 0
+                self.fade = False
+
+
+# The actual fade object.
+screen_fade = BlackScreenFade()
 
 # TODO: end_of_animation function to detect the end of an animation.
 
@@ -87,7 +132,6 @@ def add_frames_to_list():
         frame_list.append(f'run_{i}')
     for i in range(9):
         frame_list.append(f'walk_{i}')
-    print(head_positions)
 
     return frame_list
 
@@ -99,8 +143,6 @@ def load_frames_and_positions():
         counter += 1
         # Load the audio into the dictionary.
         frame_head_position[f'{i}'.format(i)] = head_positions[counter]
-        print(len(i))
-    print(frame_head_position)
 
 
 def get_head_offset_x(frame):

@@ -12,6 +12,7 @@ import game_player as p
 import game_functions as f
 import game_audio as a
 import game_backgrounds as b
+import game_entities as e
 
 
 class GameView(arcade.View):
@@ -43,6 +44,7 @@ class GameView(arcade.View):
         self.coin_list = None
         self.backgrounds_list = None
         self.foreground_decorations_list = None
+        self.explosions_list = None
         self.background_decorations_list = None
         self.wall_list = None
         self.ladder_list = None
@@ -54,6 +56,9 @@ class GameView(arcade.View):
 
         # Our background sprites.
         self.test_background = None
+
+        # The hit effects.
+        self.explosion_texture_list = []
 
         # Our 'physics' engine.
         self.physics_engine = None
@@ -96,6 +101,7 @@ class GameView(arcade.View):
         self.player_list = arcade.SpriteList()
         self.backgrounds_list = arcade.SpriteList()
         self.background_decorations_list = arcade.SpriteList()
+        self.explosions_list = arcade.SpriteList()
         self.foreground_decorations_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
         self.coin_list = arcade.SpriteList()
@@ -169,6 +175,17 @@ class GameView(arcade.View):
                                                       PIXEL_SCALING,
                                                       use_spatial_hash=True)
         '''
+
+        # Pre-load the animation frames for hit effects. We don't do this in the __init__
+        # of the explosion sprite because it
+        # takes too long and would cause the game to pause.
+        self.explosion_texture_list = []
+
+        # Load the explosions.
+        for i in range(8):
+            texture = arcade.load_texture(f'resources/images/effects/dirt_{i}.png')
+            self.explosion_texture_list.append(texture)
+
         # Other stuff.
         # Set the background color
         if my_map.background_color:
@@ -191,6 +208,7 @@ class GameView(arcade.View):
         self.background_decorations_list.draw(filter=GL_NEAREST)
         self.player_list.draw(filter=GL_NEAREST)
         self.bullet_list.draw(filter=GL_NEAREST)
+        self.explosions_list.draw(filter=GL_NEAREST)
         self.wall_list.draw(filter=GL_NEAREST)
         '''
         self.ladder_list.draw(filter=GL_NEAREST)
@@ -410,7 +428,9 @@ class GameView(arcade.View):
             # Remove the coin.
             coin.remove_from_sprite_lists()
 
+        # Bullets and hit effects.
         self.bullet_list.update()
+        self.explosions_list.update()
 
         # Loop through each bullet
         for bullet in self.bullet_list:
@@ -420,6 +440,19 @@ class GameView(arcade.View):
 
             # If it did, get rid of the bullet
             if len(hit_list) > 0:
+                # Make an explosion.
+                explosion = e.Explosion(texture_list=self.explosion_texture_list)
+
+                # Move it to the location of the coin.
+                explosion.center_x = bullet.center_x
+                explosion.center_y = bullet.center_y
+                explosion.scale = c.PIXEL_SCALING
+
+                # Call update() because it sets which image we start on.
+                explosion.update()
+
+                # Add to a list of sprites that are explosions.
+                self.explosions_list.append(explosion)
                 bullet.remove_from_sprite_lists()
 
             # If the bullet flies out of the map, remove it.
@@ -495,6 +528,8 @@ class MainMenuView(arcade.View):
         self.menu_texture = arcade.load_texture('resources/images/ui/main_menu.png')
         self.main_menu_image = None
 
+        self.fade_list = arcade.SpriteList()
+
     def on_show(self):
         '''This is run once when we switch to this view.'''
 
@@ -508,15 +543,27 @@ class MainMenuView(arcade.View):
         # to reset the viewport back to the start so we can see what we draw.
         arcade.set_viewport(0, c.SCREEN_WIDTH - 1, 0, c.SCREEN_HEIGHT - 1)
 
+        self.fade_list.append(f.screen_fade)
+
     def on_draw(self):
         '''Draw this view.'''
         arcade.start_render()
         self.main_menu_list.draw(filter=GL_NEAREST)
+        self.fade_list.draw(filter=GL_NEAREST)
+
+    def on_update(self, delta_time: float):
+        '''For updating the scenes and animations.'''
+        if f.screen_fade.fade:
+            f.screen_fade.change_fade(target=255, change=4)
 
     def on_mouse_press(self, x, y, button, modifiers):
         '''If the user presses the mouse button, start the intro.'''
         intro_view = IntroView()
-        self.window.show_view(intro_view)
+        f.screen_fade.fade = True
+
+        # If sufficiently dark, move to intro view.
+        if f.screen_fade.alpha >= 250:
+            self.window.show_view(intro_view)
 
 
 class IntroView(arcade.View):
@@ -532,6 +579,9 @@ class IntroView(arcade.View):
 
         self.scene_list = arcade.SpriteList()
 
+        # Black fading effect.
+        self.fade_list = arcade.SpriteList()
+
         # Initial scene.
         self.scene = 1
         self.cur_texture = 0
@@ -545,7 +595,11 @@ class IntroView(arcade.View):
             texture = arcade.load_texture(f'resources/images/cutscene/auckland_{i}.png')
             self.scene_1_textures.append(texture)
 
+        # Load initial texture.
+        self.image.texture = self.scene_1_textures[0]
+
         self.scene_list.append(self.image)
+        self.fade_list.append(f.screen_fade)
 
     def on_show(self):
         '''This is run once when we switch to this view.'''
@@ -553,6 +607,8 @@ class IntroView(arcade.View):
         # Reset the viewport, necessary if we have a scrolling game and we need
         # to reset the viewport back to the start so we can see what we draw.
         arcade.set_viewport(0, c.SCREEN_WIDTH - 1, 0, c.SCREEN_HEIGHT - 1)
+
+        f.screen_fade.fade = True
 
     def on_update(self, delta_time: float):
         '''For updating the scenes and animations.'''
@@ -566,11 +622,14 @@ class IntroView(arcade.View):
         self.image.scale = c.INTRO_SCALING
         self.image.center_x = c.SCREEN_WIDTH / 2
         self.image.center_y = c.SCREEN_HEIGHT / 2
+        if f.screen_fade.fade:
+            f.screen_fade.change_fade(target=0, change=4)
 
     def on_draw(self):
         '''Draw this view.'''
         arcade.start_render()
         self.scene_list.draw(filter=GL_NEAREST)
+        self.fade_list.draw(filter=GL_NEAREST)
 
     def on_mouse_press(self, x, y, button, modifiers):
         '''If the user presses the mouse button, start the game.'''

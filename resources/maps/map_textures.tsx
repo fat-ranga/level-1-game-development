@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.5" tiledversion="1.7.0" name="map_textures" tilewidth="64" tileheight="64" tilecount="12" columns="0">
+<tileset version="1.5" tiledversion="1.7.0" name="map_textures" tilewidth="64" tileheight="64" tilecount="13" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="0">
   <image width="16" height="16" source="../images/tiles/test_tile.png"/>
@@ -36,5 +36,8 @@
  </tile>
  <tile id="11">
   <image width="64" height="32" source="../images/items/ak-47/default.png"/>
+ </tile>
+ <tile id="12">
+  <image width="16" height="16" source="../images/tiles/short_grass.png"/>
  </tile>
 </tileset>

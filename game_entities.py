@@ -1,5 +1,5 @@
 '''
-For all npcs and enemies.
+For all npcs, enemies and effects.
 
 Import this as 'e' for consistency.
 '''
@@ -13,3 +13,25 @@ import game_constants as c
 import game_player as p
 import game_functions as f
 import game_audio as a
+
+
+class Explosion(arcade.Sprite):
+    '''This class creates an explosion animation.'''
+
+    def __init__(self, texture_list):
+        super().__init__()
+
+        # Start at the first frame
+        self.current_texture = 0
+        self.textures = texture_list
+
+    def update(self):
+
+        # Update to the next frame of the animation. If we are at the end
+        # of our frames, then delete this sprite.
+        self.current_texture += 1
+        if self.current_texture < len(self.textures):
+            frame = self.current_texture // c.UPDATES_PER_FRAME
+            self.set_texture(self.current_texture)
+        else:
+            self.remove_from_sprite_lists()
