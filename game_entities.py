@@ -30,8 +30,8 @@ class Explosion(arcade.Sprite):
         # Update to the next frame of the animation. If we are at the end
         # of our frames, then delete this sprite.
         self.current_texture += 1
-        if self.current_texture < len(self.textures):
-            frame = self.current_texture // c.UPDATES_PER_FRAME
-            self.set_texture(self.current_texture)
+        if self.current_texture < len(self.textures * c.EFFECT_UPDATES_PER_FRAME):
+            frame = self.current_texture // c.EFFECT_UPDATES_PER_FRAME
+            self.set_texture(frame)
         else:
             self.remove_from_sprite_lists()

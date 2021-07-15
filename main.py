@@ -7,6 +7,7 @@ import os
 import random
 from pyglet.gl import GL_NEAREST
 import math
+import timeit
 import game_constants as c
 import game_player as p
 import game_functions as f
@@ -75,6 +76,19 @@ class GameView(arcade.View):
         # Mouse position.
         self.mouse_position_x = 0
         self.mouse_position_y = 0
+
+        # -- Variables for our statistics -- #
+
+        # Time for on_update.
+        self.processing_time = 0
+
+        # Time for on_draw.
+        self.draw_time = 0
+
+        # Variables used to calculate frames per second.
+        self.frame_count = 0
+        self.fps_start_timer = None
+        self.fps = None
 
         # Set background colour.
         arcade.set_background_color(arcade.color.CORNFLOWER_BLUE)
@@ -200,6 +214,24 @@ class GameView(arcade.View):
     def on_draw(self):
         '''Render the screen.'''
 
+        # Start timing how long this takes
+        start_time = timeit.default_timer()
+
+        # --- Calculate FPS
+
+        fps_calculation_freq = 60
+        # Once every 60 frames, calculate our FPS.
+        if self.frame_count % fps_calculation_freq == 0:
+            # Do we have a start time?
+            if self.fps_start_timer is not None:
+                # Calculate FPS.
+                total_time = timeit.default_timer() - self.fps_start_timer
+                self.fps = fps_calculation_freq / total_time
+            # Reset the timer.
+            self.fps_start_timer = timeit.default_timer()
+        # Add one to our frame count.
+        self.frame_count += 1
+
         # Clear the screen to the background colour.
         arcade.start_render()
 
@@ -217,15 +249,33 @@ class GameView(arcade.View):
         self.foreground_decorations_list.draw(filter=GL_NEAREST)
 
         # Draw our score on the screen, scrolling it with the viewport.
-        score_text = f'Score: {self.score}'
-        arcade.draw_text(score_text, 10 + self.view_left, 10 + self.view_bottom,
-                         arcade.csscolor.WHITE, 32, font_name='resources/Unexplored.ttf')
+        #score_text = f'Score: {self.score}'
+        #arcade.draw_text(score_text, 10 + self.view_left, 10 + self.view_bottom,
+        #                 arcade.csscolor.WHITE, 32, font_name='resources/Unexplored.ttf')
 
         # Draw hit boxes.
         # for wall in self.wall_list:
         # wall.draw_hit_box(arcade.color.BLACK, 3)
 
         # self.player_sprite.draw_hit_box(arcade.color.RED, 2)
+
+        # Display timings.
+        '''
+        output = f"Processing time: {self.processing_time:.3f}"
+        arcade.draw_text(output,  + self.view_left, c.SCREEN_HEIGHT - 25 + self.view_bottom,
+                         arcade.color.WHITE, 18, font_name='resources/Unexplored.ttf')
+
+        output = f"Drawing time: {self.draw_time:.3f}"
+        arcade.draw_text(output, 20 + self.view_left, c.SCREEN_HEIGHT - 50 + self.view_bottom,
+                         arcade.color.WHITE, 18, font_name='resources/Unexplored.ttf')
+        '''
+        if self.fps is not None:
+            output = f'{self.fps:.0f} FPS'
+            arcade.draw_text(output, 20 + self.view_left, c.SCREEN_HEIGHT - 40 + self.view_bottom,
+                             arcade.color.WHITE, 18, font_name='resources/Unexplored.ttf')
+
+        # Stop the draw timer, and calculate total on_draw time.
+        self.draw_time = timeit.default_timer() - start_time
 
     def process_keychange(self):
         '''Called when we change a key up/down or we move on/off a ladder.'''
@@ -367,6 +417,9 @@ class GameView(arcade.View):
     def on_update(self, delta_time):
         '''Movement and game logic.'''
 
+        # Start timing how long this takes.
+        start_time = timeit.default_timer()
+
         if self.player_sprite.center_y < c.WORLD_BOTTOM:
             self.setup()
 
@@ -504,6 +557,9 @@ class GameView(arcade.View):
                                 c.SCREEN_WIDTH + self.view_left,
                                 self.view_bottom,
                                 c.SCREEN_HEIGHT + self.view_bottom)
+
+            # Stop the draw timer, and calculate total on_draw time.
+            self.processing_time = timeit.default_timer() - start_time
 
     def on_mouse_motion(self, x, y, dx, dy):
         '''Handle Mouse Motion.'''

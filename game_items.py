@@ -21,6 +21,7 @@ one_handed_offset_y = 0
 two_handed_offset_x = 0
 two_handed_offset_y = 0
 
+
 class Weapon(arcade.Sprite):
     '''The base weapon class'''
 
@@ -33,6 +34,13 @@ class Weapon(arcade.Sprite):
 
         # Should we show the texture? Used for equipping/de-equipping different weapons.
         self.visible = True
+
+        self.one_handed = False
+        self.two_handed = False
+
+        self.current_ammo = 0
+        self.max_ammo = 0
+        self.clip_ammo = 0
 
         # Sprite texture.
         self.glock_17_texture = arcade.load_texture('resources/images/items/glock_17/default.png')
@@ -50,3 +58,5 @@ class Weapon(arcade.Sprite):
         # Go to wherever the sprite is.
         self.center_x = self.follow_x + (self.offset_x * c.PIXEL_SCALING)
         self.center_y = self.follow_y + (self.offset_y * c.PIXEL_SCALING)
+
+
