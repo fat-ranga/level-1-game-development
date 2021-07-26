@@ -21,6 +21,10 @@ GRID_PIXEL_SIZE = PIXEL_SCALING
 MAP_WIDTH = 256 * PIXEL_SCALING
 MAP_HEIGHT = 256 * PIXEL_SCALING
 
+# Used for culling bullet sprites beyond a certain distance from the player.
+CULL_DISTANCE_X = 4000
+CULL_DISTANCE_Y = 2000
+
 # Movement speed of player, in pixels per frame.
 PLAYER_WALK_SPEED = 4.6
 PLAYER_RUN_SPEED = 9.3

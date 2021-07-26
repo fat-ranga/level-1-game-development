@@ -56,7 +56,7 @@ class GameView(arcade.View):
         self.player_sprite = None
 
         # Our background sprites.
-        self.test_background = None
+        self.background_0 = None
 
         # The hit effects.
         self.explosion_texture_list = []
@@ -100,6 +100,10 @@ class GameView(arcade.View):
         # Load all of the positions for the head from the different animation frames.
         f.add_frames_to_list()
         f.load_frames_and_positions()
+
+        # Do the same for the arms.
+        f.arms_add_frames_to_list()
+        f.arms_load_frames_and_positions()
 
     def setup(self):
         '''Set up the game here. Call this function to restart the game.'''
@@ -155,11 +159,11 @@ class GameView(arcade.View):
         self.end_of_map = my_map.map_size.width * c.GRID_PIXEL_SIZE
 
         # Parallax environment backgrounds.
-        self.test_background = b.Background()
+        self.background_0 = b.Background()
 
-        self.test_background.follow_x = self.player_sprite.center_x
-        self.test_background.follow_y = self.player_sprite.center_y
-        self.backgrounds_list.append(self.test_background)
+        self.background_0.follow_x = self.player_sprite.center_x
+        self.background_0.follow_y = self.player_sprite.center_y
+        self.backgrounds_list.append(self.background_0)
 
         # Platforms.
         self.wall_list = arcade.tilemap.process_layer(my_map,
@@ -380,7 +384,7 @@ class GameView(arcade.View):
 
             # Position the bullet at the player's front arm.
             start_x = self.player_sprite.front_arm.center_x
-            start_y = self.player_sprite.front_arm.center_y
+            start_y = self.player_sprite.front_arm.center_y # TODO: Change this to gun position.
             bullet.center_x = start_x
             bullet.center_y = start_y
 
@@ -390,7 +394,7 @@ class GameView(arcade.View):
             dest_x = x + self.view_left
             dest_y = y + self.view_bottom
 
-            # Do math to calculate how to get the bullet to the destination.
+            # Do maths to calculate how to get the bullet to the destination.
             # Calculation the angle in radians between the start points
             # and end points. This is the angle the bullet will travel.
             x_diff = dest_x - start_x
@@ -424,7 +428,7 @@ class GameView(arcade.View):
             self.setup()
 
         # Get mouse position.
-        # It is multiplied by view_left and view_bottom so that the position works when the scrolling screen moves.
+        # view_left and view_bottom added so that the position works when the scrolling screen moves.
         self.player_sprite.acquire_mouse_position(self.mouse_position_x + self.view_left,
                                                   self.mouse_position_y + self.view_bottom)
 
@@ -509,12 +513,12 @@ class GameView(arcade.View):
                 bullet.remove_from_sprite_lists()
 
             # If the bullet flies out of the map, remove it.
-            # if bullet.bottom > MAP_HEIGHT or bullet.top < MAP_HEIGHT or bullet.right < MAP_WIDTH or bullet.left > MAP_WIDTH:
-        #     bullet.remove_from_sprite_lists()
+            if bullet.bottom > c.CULL_DISTANCE_Y + self.player_sprite.center_y or bullet.top < c.CULL_DISTANCE_Y * -1 + self.player_sprite.center_y or bullet.right < c.CULL_DISTANCE_X * -1 + self.player_sprite.center_x or bullet.left > c.CULL_DISTANCE_X + self.player_sprite.center_x:
+                bullet.remove_from_sprite_lists()
 
         # Update the environment backgrounds.
-        self.test_background.follow_x = self.player_sprite.center_x
-        self.test_background.follow_y = self.player_sprite.center_y
+        self.background_0.follow_x = self.player_sprite.center_x
+        self.background_0.follow_y = self.player_sprite.center_y
         self.backgrounds_list.update()
 
         # Track if we need to change the viewport.

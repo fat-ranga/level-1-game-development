@@ -59,33 +59,33 @@ class PlayerCharacter(arcade.Sprite):
         self.cur_texture_name = 'idle_to_walk_0'
 
         # Load textures for IDLE standing.
-        self.idle_texture_pair = f.load_texture_pair(f'resources/images/characters/test/body/idle_to_walk_0.png')
-        self.jump_texture_pair = f.load_texture_pair(f'resources/images/characters/test/body/idle_to_walk_0.png')
-        self.fall_texture_pair = f.load_texture_pair(f'resources/images/characters/test/body/idle_to_walk_0.png')
+        self.idle_texture_pair = f.load_texture_pair(f'resources/images/characters/player/body/idle_to_walk_0.png')
+        self.jump_texture_pair = f.load_texture_pair(f'resources/images/characters/player/body/idle_to_walk_0.png')
+        self.fall_texture_pair = f.load_texture_pair(f'resources/images/characters/player/body/idle_to_walk_0.png')
 
         # Load textures for WALKING.
         self.walk_textures = []
         for i in range(9):
-            texture = f.load_texture_pair(f'resources/images/characters/test/body/walk_{i}.png')
+            texture = f.load_texture_pair(f'resources/images/characters/player/body/walk_{i}.png')
             self.walk_textures.append(texture)
 
         # Load textures for RUNNING.
         self.run_textures = []
         for i in range(5):
-            texture = f.load_texture_pair(f'resources/images/characters/test/body/run_{i}.png')
+            texture = f.load_texture_pair(f'resources/images/characters/player/body/run_{i}.png')
             self.run_textures.append(texture)
 
         # Load textures for CLIMBING.
         self.climbing_textures = []
-        texture = arcade.load_texture(f'resources/images/characters/test/body/idle_to_walk_0.png')
+        texture = arcade.load_texture(f'resources/images/characters/player/body/idle_to_walk_0.png')
         self.climbing_textures.append(texture)
-        texture = arcade.load_texture(f'resources/images/characters/test/body/idle_to_walk_0.png')
+        texture = arcade.load_texture(f'resources/images/characters/player/body/idle_to_walk_0.png')
         self.climbing_textures.append(texture)
 
         # Load textures for going from IDLE to JUMPING.
         self.idle_to_jump_textures = []
         for i in range(16):
-            texture = f.load_texture_pair(f'resources/images/characters/test/body/idle_to_jump_{i}.png')
+            texture = f.load_texture_pair(f'resources/images/characters/player/body/idle_to_jump_{i}.png')
             self.idle_to_jump_textures.append(texture)
 
         # Set the initial texture.
@@ -139,40 +139,96 @@ class PlayerCharacter(arcade.Sprite):
 
         self.legs.character_face_direction = self.character_face_direction
 
-        # Position the head.
+        # Position the head using body position and x, y offsets listed in 'game_functions.py'.
         if self.character_face_direction == c.RIGHT_FACING:
             if not self.idling:
                 if self.head.angle >= -90 and self.head.angle <= 90:
-                    self.head.center_x = self.center_x + (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
-                                                            0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                    self.head.center_x = self.center_x + (
+                                f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
+                                                 0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
                 else:
-                    self.head.center_x = self.center_x + (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
-                                                            2 * c.PIXEL_SCALING)
+                    self.head.center_x = self.center_x + (
+                                f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                                                 2 * c.PIXEL_SCALING)
             else:
                 if self.head.angle >= -90 and self.head.angle <= 90:
-                    self.head.center_x = self.center_x + (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
-                                                            2 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                    self.head.center_x = self.center_x + (
+                                f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
+                                                 2 * c.PIXEL_SCALING)  # Offset for looking the other direction.
                 else:
-                    self.head.center_x = self.center_x + (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
-                                                            0 * c.PIXEL_SCALING)
+                    self.head.center_x = self.center_x + (
+                                f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                                                 0 * c.PIXEL_SCALING)
 
         else:
             if self.idling:
                 if self.head.angle >= -90 and self.head.angle <= 90:
-                    self.head.center_x = self.center_x - (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
-                                                            0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
-                else:
-                    self.head.center_x = self.center_x - (f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
-                                                            2 * c.PIXEL_SCALING)
-            else:
-                if self.head.angle >= -90 and self.head.angle <= 90:
                     self.head.center_x = self.center_x - (
-                                f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
-                                                 2 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                                f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                                                 0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
                 else:
                     self.head.center_x = self.center_x - (
                                 f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                                                 2 * c.PIXEL_SCALING)
+            else:
+                if self.head.angle >= -90 and self.head.angle <= 90:
+                    self.head.center_x = self.center_x - (
+                            f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
+                                                 2 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                else:
+                    self.head.center_x = self.center_x - (
+                            f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
                                                  0 * c.PIXEL_SCALING)
+
+        # Same sort of positioning for the arms.
+        if self.equipped_one_handed:
+            self.front_arm.update_rotation(dest_x=self.mouse_pos_x,
+                                           dest_y=self.mouse_pos_y)
+            if self.character_face_direction == c.RIGHT_FACING:
+                if not self.idling:
+                    if self.front_arm.angle >= -90 and self.front_arm.angle <= 90:
+                        self.front_arm.center_x = self.center_x + (
+                                    f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
+                                                     0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                    else:
+                        self.front_arm.center_x = self.center_x + (
+                                    f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                                                     2 * c.PIXEL_SCALING)
+                else:
+                    if self.front_arm.angle >= -90 and self.front_arm.angle <= 90:
+                        self.front_arm.center_x = self.center_x + (
+                                    f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
+                                                     2 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                    else:
+                        self.front_arm.center_x = self.center_x + (
+                                    f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                                                     0 * c.PIXEL_SCALING)
+
+            else:
+                if self.idling:
+                    if self.front_arm.angle >= -90 and self.front_arm.angle <= 90:
+                        self.front_arm.center_x = self.center_x - (
+                                    f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                                                     0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                    else:
+                        self.front_arm.center_x = self.center_x - (
+                                    f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                                                     2 * c.PIXEL_SCALING)
+                else:
+                    if self.front_arm.angle >= -90 and self.front_arm.angle <= 90:
+                        self.front_arm.center_x = self.center_x - (
+                                f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
+                                                     2 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                    else:
+                        self.front_arm.center_x = self.center_x - (
+                                f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                                                     0 * c.PIXEL_SCALING)
+        else:
+            # Regular animation.
+            self.front_arm.center_x = self.center_x
+            self.front_arm.center_y = self.center_y
+            self.front_arm.angle = 0
+            self.front_arm.cur_texture = self.cur_texture
 
 
         self.head.center_y = self.center_y + (f.get_head_offset_y(self.cur_texture_name) * c.PIXEL_SCALING)
@@ -187,6 +243,8 @@ class PlayerCharacter(arcade.Sprite):
                                   dest_y=self.mouse_pos_y)
 
         # Front arm.
+        self.front_arm.center_y = self.center_y + (f.get_arms_offset_y(self.cur_texture_name) * c.PIXEL_SCALING)
+
         self.front_arm.jumping = self.jumping
         self.front_arm.climbing = self.climbing
         self.front_arm.is_on_ladder = self.is_on_ladder
@@ -196,14 +254,15 @@ class PlayerCharacter(arcade.Sprite):
         self.front_arm.character_face_direction = self.character_face_direction
         self.firing = self.front_arm.firing
 
+        '''
         if self.equipped_one_handed:
-            self.front_arm.center_y = self.center_y + (17 * c.PIXEL_SCALING)
+            self.front_arm.center_y = self.center_y# + (17 * c.PIXEL_SCALING)
             self.front_arm.update_rotation(dest_x=self.mouse_pos_x,
                                            dest_y=self.mouse_pos_y)
             if self.character_face_direction == c.RIGHT_FACING:
-                self.front_arm.center_x = self.center_x - (4 * c.PIXEL_SCALING)
+                self.front_arm.center_x = self.center_x# - (4 * c.PIXEL_SCALING)
             elif self.character_face_direction == c.LEFT_FACING:
-                self.front_arm.center_x = self.center_x + (4 * c.PIXEL_SCALING)
+                self.front_arm.center_x = self.center_x# + (4 * c.PIXEL_SCALING)
         else:
             self.front_arm.center_x = self.center_x
             self.front_arm.center_y = self.center_y
@@ -223,7 +282,7 @@ class PlayerCharacter(arcade.Sprite):
         self.back_arm.center_x = self.center_x
         self.back_arm.center_y = self.center_y
         self.back_arm.angle = 0
-
+        '''
     def update_animation(self, delta_time: float = 1 / 60):
         self.update_appendages()
         # Figure out if we need to flip face left or right.
@@ -249,7 +308,7 @@ class PlayerCharacter(arcade.Sprite):
         if self.change_y > 0 and not self.is_on_ladder:
             self.jumping = True
             self.cur_texture += 1
-            if self.cur_texture > 15 * c.UPDATES_PER_FRAME: # TODO: Change all these to the actual length of the list.
+            if self.cur_texture > 15 * c.UPDATES_PER_FRAME:  # TODO: Change all these to the actual length of the list.
                 self.cur_texture = 0
             frame = self.cur_texture // c.UPDATES_PER_FRAME
             self.cur_texture_name = f'idle_to_jump_{frame}'
@@ -328,33 +387,33 @@ class PlayerCharacter(arcade.Sprite):
             # --- Load Textures --- #
 
             # Load textures for IDLE standing.
-            self.idle_texture_pair = f.load_texture_pair(f'resources/images/characters/test/legs/idle_to_walk_0.png')
-            self.jump_texture_pair = f.load_texture_pair(f'resources/images/characters/test/legs/idle_to_walk_0.png')
-            self.fall_texture_pair = f.load_texture_pair(f'resources/images/characters/test/legs/idle_to_walk_0.png')
+            self.idle_texture_pair = f.load_texture_pair(f'resources/images/characters/player/legs/idle_to_walk_0.png')
+            self.jump_texture_pair = f.load_texture_pair(f'resources/images/characters/player/legs/idle_to_walk_0.png')
+            self.fall_texture_pair = f.load_texture_pair(f'resources/images/characters/player/legs/idle_to_walk_0.png')
 
             # Load textures for WALKING.
             self.walk_textures = []
             for i in range(9):
-                texture = f.load_texture_pair(f'resources/images/characters/test/legs/walk_{i}.png')
+                texture = f.load_texture_pair(f'resources/images/characters/player/legs/walk_{i}.png')
                 self.walk_textures.append(texture)
 
             # Load textures for RUNNING.
             self.run_textures = []
             for i in range(5):
-                texture = f.load_texture_pair(f'resources/images/characters/test/legs/run_{i}.png')
+                texture = f.load_texture_pair(f'resources/images/characters/player/legs/run_{i}.png')
                 self.run_textures.append(texture)
 
             # Load textures for going from IDLE to JUMPING.
             self.idle_to_jump_textures = []
             for i in range(16):
-                texture = f.load_texture_pair(f'resources/images/characters/test/legs/idle_to_jump_{i}.png')
+                texture = f.load_texture_pair(f'resources/images/characters/player/legs/idle_to_jump_{i}.png')
                 self.idle_to_jump_textures.append(texture)
 
             # Load textures for CLIMBING.
             self.climbing_textures = []
-            texture = arcade.load_texture(f'resources/images/characters/test/legs/idle_to_walk_0.png')
+            texture = arcade.load_texture(f'resources/images/characters/player/legs/idle_to_walk_0.png')
             self.climbing_textures.append(texture)
-            texture = arcade.load_texture(f'resources/images/characters/test/legs/idle_to_walk_0.png')
+            texture = arcade.load_texture(f'resources/images/characters/player/legs/idle_to_walk_0.png')
             self.climbing_textures.append(texture)
 
             # Set the initial texture.
@@ -423,7 +482,7 @@ class PlayerCharacter(arcade.Sprite):
             # --- Load Textures --- #
 
             # Load textures for IDLE standing.
-            self.texture_pair = f.load_texture_pair_vertical_flip(f'resources/images/characters/test/head/head.png')
+            self.texture_pair = f.load_texture_pair_vertical_flip(f'resources/images/characters/player/head/head.png')
 
             # Set the initial texture.
             self.texture = self.texture_pair[0]
@@ -489,40 +548,40 @@ class PlayerCharacter(arcade.Sprite):
 
             # Load textures for idle standing.
             self.idle_texture_pair = f.load_texture_pair(
-                f'resources/images/characters/test/front_arms/idle_to_walk_0.png')
+                f'resources/images/characters/player/front_arms/idle_to_walk_0.png')
 
             # Load textures for climbing.
             self.climbing_textures = f.load_texture_pair(
-                f'resources/images/characters/test/front_arms/idle_to_walk_0.png')
+                f'resources/images/characters/player/front_arms/idle_to_walk_0.png')
 
             # Load textures for One-Handed weapons.
             self.one_handed_texture_pair = f.load_texture_pair_vertical_flip(
-                f'resources/images/characters/test/front_arms'
+                f'resources/images/characters/player/front_arms'
                 f'/one_handed_firing_0.png')
 
             # Load textures for going from IDLE to JUMPING.
             self.idle_to_jump_textures = []
             for i in range(16):
-                texture = f.load_texture_pair(f'resources/images/characters/test/front_arms/idle_to_jump_{i}.png')
+                texture = f.load_texture_pair(f'resources/images/characters/player/front_arms/idle_to_jump_{i}.png')
                 self.idle_to_jump_textures.append(texture)
 
             # Load textures for walking.
             self.walk_textures = []
             for i in range(9):
-                texture = f.load_texture_pair(f'resources/images/characters/test/front_arms/walk_{i}.png')
+                texture = f.load_texture_pair(f'resources/images/characters/player/front_arms/walk_{i}.png')
                 self.walk_textures.append(texture)
 
             # Load textures for RUNNING.
             self.run_textures = []
             for i in range(5):
-                texture = f.load_texture_pair(f'resources/images/characters/test/front_arms/run_{i}.png')
+                texture = f.load_texture_pair(f'resources/images/characters/player/front_arms/run_{i}.png')
                 self.run_textures.append(texture)
 
             # Load textures for ONE-HANDED FIRING.
             self.one_handed_firing_textures = []
             for i in range(3):
                 texture = f.load_texture_pair_vertical_flip(
-                    f'resources/images/characters/test/front_arms/one_handed_firing_{i}.png')
+                    f'resources/images/characters/player/front_arms/one_handed_firing_{i}.png')
                 self.one_handed_firing_textures.append(texture)
 
             # Set the initial texture.
@@ -645,28 +704,28 @@ class PlayerCharacter(arcade.Sprite):
 
             # Load textures for idle standing.
             self.idle_texture_pair = f.load_texture_pair(
-                f'resources/images/characters/test/back_arms/idle_to_walk_0.png')
+                f'resources/images/characters/player/back_arms/idle_to_walk_0.png')
 
             # Load textures for climbing.
             self.climbing_textures = f.load_texture_pair(
-                f'resources/images/characters/test/back_arms/idle_to_walk_0.png')
+                f'resources/images/characters/player/back_arms/idle_to_walk_0.png')
 
             # Load textures for going from IDLE to JUMPING.
             self.idle_to_jump_textures = []
             for i in range(16):
-                texture = f.load_texture_pair(f'resources/images/characters/test/back_arms/idle_to_jump_{i}.png')
+                texture = f.load_texture_pair(f'resources/images/characters/player/back_arms/idle_to_jump_{i}.png')
                 self.idle_to_jump_textures.append(texture)
 
             # Load textures for walking.
             self.walk_textures = []
             for i in range(9):
-                texture = f.load_texture_pair(f'resources/images/characters/test/back_arms/walk_{i}.png')
+                texture = f.load_texture_pair(f'resources/images/characters/player/back_arms/walk_{i}.png')
                 self.walk_textures.append(texture)
 
             # Load textures for RUNNING.
             self.run_textures = []
             for i in range(5):
-                texture = f.load_texture_pair(f'resources/images/characters/test/back_arms/run_{i}.png')
+                texture = f.load_texture_pair(f'resources/images/characters/player/back_arms/run_{i}.png')
                 self.run_textures.append(texture)
 
             # Set the initial texture.
