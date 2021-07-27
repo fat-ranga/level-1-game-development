@@ -89,7 +89,7 @@ class GameView(arcade.View):
         self.frame_count = 0
         self.fps_start_timer = None
         self.fps = None
-
+        # TODO: SHeeeeeesh
         # Set background colour.
         arcade.set_background_color(arcade.color.CORNFLOWER_BLUE)
 
