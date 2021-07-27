@@ -144,32 +144,33 @@ class PlayerCharacter(arcade.Sprite):
             if not self.idling:
                 if self.head.angle >= -90 and self.head.angle <= 90:
                     self.head.center_x = self.center_x + (
-                                f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
+                            f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
                                                  0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
                 else:
                     self.head.center_x = self.center_x + (
-                                f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                            f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
                                                  2 * c.PIXEL_SCALING)
             else:
                 if self.head.angle >= -90 and self.head.angle <= 90:
                     self.head.center_x = self.center_x + (
-                                f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
+                            f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
                                                  2 * c.PIXEL_SCALING)  # Offset for looking the other direction.
                 else:
                     self.head.center_x = self.center_x + (
-                                f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                            f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
                                                  0 * c.PIXEL_SCALING)
 
         else:
             if self.idling:
                 if self.head.angle >= -90 and self.head.angle <= 90:
                     self.head.center_x = self.center_x - (
-                                f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                            f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
                                                  0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
                 else:
                     self.head.center_x = self.center_x - (
-                                f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                            f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
                                                  2 * c.PIXEL_SCALING)
+                    self.front_arm.center_x -= 3 * c.PIXEL_SCALING
             else:
                 if self.head.angle >= -90 and self.head.angle <= 90:
                     self.head.center_x = self.center_x - (
@@ -179,50 +180,62 @@ class PlayerCharacter(arcade.Sprite):
                     self.head.center_x = self.center_x - (
                             f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
                                                  0 * c.PIXEL_SCALING)
+                    self.front_arm.center_x -= 3 * c.PIXEL_SCALING
 
         # Same sort of positioning for the arms.
-        if self.equipped_one_handed:
+        if self.equipped_one_handed or self.front_arm.equipped_two_handed or self.front_arm.equipped_one_handed:
+            self.front_arm.center_y = self.center_y + (f.get_arms_offset_y(self.cur_texture_name) * c.PIXEL_SCALING)
             self.front_arm.update_rotation(dest_x=self.mouse_pos_x,
                                            dest_y=self.mouse_pos_y)
+            # Offsets for facing right.
             if self.character_face_direction == c.RIGHT_FACING:
                 if not self.idling:
                     if self.front_arm.angle >= -90 and self.front_arm.angle <= 90:
                         self.front_arm.center_x = self.center_x + (
-                                    f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
-                                                     0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                                f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
+                                                          0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
                     else:
                         self.front_arm.center_x = self.center_x + (
-                                    f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
-                                                     2 * c.PIXEL_SCALING)
+                                f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                                                          0 * c.PIXEL_SCALING)
+                        self.front_arm.center_x -= 3 * c.PIXEL_SCALING
                 else:
                     if self.front_arm.angle >= -90 and self.front_arm.angle <= 90:
                         self.front_arm.center_x = self.center_x + (
-                                    f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
-                                                     2 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                                f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
+                                                          0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
                     else:
                         self.front_arm.center_x = self.center_x + (
-                                    f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
-                                                     0 * c.PIXEL_SCALING)
+                                f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                                                          0 * c.PIXEL_SCALING)
+                        self.front_arm.center_x -= 3 * c.PIXEL_SCALING
 
+                self.front_arm.center_x -= 3 * c.PIXEL_SCALING
+                self.front_arm.center_y -= 7 * c.PIXEL_SCALING
+
+            # Offsets for facing left.
             else:
                 if self.idling:
                     if self.front_arm.angle >= -90 and self.front_arm.angle <= 90:
                         self.front_arm.center_x = self.center_x - (
-                                    f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
-                                                     0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                                f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                                                          0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
                     else:
                         self.front_arm.center_x = self.center_x - (
-                                    f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
-                                                     2 * c.PIXEL_SCALING)
+                                f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                                                          0 * c.PIXEL_SCALING)
                 else:
                     if self.front_arm.angle >= -90 and self.front_arm.angle <= 90:
                         self.front_arm.center_x = self.center_x - (
                                 f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
-                                                     2 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                                                          0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
                     else:
                         self.front_arm.center_x = self.center_x - (
                                 f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
-                                                     0 * c.PIXEL_SCALING)
+                                                          0 * c.PIXEL_SCALING)
+
+                self.front_arm.center_x += 3 * c.PIXEL_SCALING
+                self.front_arm.center_y -= 7 * c.PIXEL_SCALING
         else:
             # Regular animation.
             self.front_arm.center_x = self.center_x
@@ -230,6 +243,14 @@ class PlayerCharacter(arcade.Sprite):
             self.front_arm.angle = 0
             self.front_arm.cur_texture = self.cur_texture
 
+            # Then add the final offset, since I couldn't be bothered
+            # to check the actual offset for each frame of the animation.
+            if self.character_face_direction == c.RIGHT_FACING:
+                self.front_arm.center_x -= 1 * c.PIXEL_SCALING
+                self.front_arm.center_y -= 1 * c.PIXEL_SCALING
+            else:
+                self.front_arm.center_x += 1 * c.PIXEL_SCALING
+                self.front_arm.center_y -= 1 * c.PIXEL_SCALING
 
         self.head.center_y = self.center_y + (f.get_head_offset_y(self.cur_texture_name) * c.PIXEL_SCALING)
 
@@ -243,7 +264,7 @@ class PlayerCharacter(arcade.Sprite):
                                   dest_y=self.mouse_pos_y)
 
         # Front arm.
-        self.front_arm.center_y = self.center_y + (f.get_arms_offset_y(self.cur_texture_name) * c.PIXEL_SCALING)
+        #self.front_arm.center_y = self.center_y + (f.get_arms_offset_y(self.cur_texture_name) * c.PIXEL_SCALING)
 
         self.front_arm.jumping = self.jumping
         self.front_arm.climbing = self.climbing
@@ -268,7 +289,7 @@ class PlayerCharacter(arcade.Sprite):
             self.front_arm.center_y = self.center_y
             self.front_arm.angle = 0
             self.front_arm.cur_texture = self.cur_texture
-
+        '''
         # Back arm.
         self.back_arm.jumping = self.jumping
         self.back_arm.climbing = self.climbing
@@ -282,9 +303,7 @@ class PlayerCharacter(arcade.Sprite):
         self.back_arm.center_x = self.center_x
         self.back_arm.center_y = self.center_y
         self.back_arm.angle = 0
-        '''
 
-        # TODO: Something, I think
     def update_animation(self, delta_time: float = 1 / 60):
         self.update_appendages()
         # Figure out if we need to flip face left or right.
