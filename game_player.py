@@ -283,6 +283,8 @@ class PlayerCharacter(arcade.Sprite):
         self.back_arm.center_y = self.center_y
         self.back_arm.angle = 0
         '''
+
+        # TODO: Something, I think
     def update_animation(self, delta_time: float = 1 / 60):
         self.update_appendages()
         # Figure out if we need to flip face left or right.
