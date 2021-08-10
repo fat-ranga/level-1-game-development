@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.5" tiledversion="1.7.0" name="map_textures" tilewidth="128" tileheight="128" tilecount="21" columns="0">
+<tileset version="1.5" tiledversion="1.7.1" name="map_textures" tilewidth="128" tileheight="128" tilecount="22" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="0">
   <image width="16" height="16" source="../images/tiles/test_tile.png"/>
@@ -83,5 +83,8 @@
  </tile>
  <tile id="20">
   <image width="128" height="128" source="../images/tiles/tree.png"/>
+ </tile>
+ <tile id="21">
+  <image width="64" height="64" source="../images/tiles/treasure.png"/>
  </tile>
 </tileset>

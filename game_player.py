@@ -189,11 +189,11 @@ class PlayerCharacter(arcade.Sprite):
                                            dest_y=self.mouse_pos_y)
             # Offsets for facing right.
             if self.character_face_direction == c.RIGHT_FACING:
-                if not self.idling:
+                if self.sprinting:
                     if self.front_arm.angle >= -90 and self.front_arm.angle <= 90:
                         self.front_arm.center_x = self.center_x + (
                                 f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
-                                                          0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                                                          2 * c.PIXEL_SCALING)  # Offset for looking the other direction.
                     else:
                         self.front_arm.center_x = self.center_x + (
                                 f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
@@ -210,16 +210,16 @@ class PlayerCharacter(arcade.Sprite):
                                                           0 * c.PIXEL_SCALING)
                         self.front_arm.center_x -= 3 * c.PIXEL_SCALING
 
-                self.front_arm.center_x -= 3 * c.PIXEL_SCALING
+                self.front_arm.center_x -= 4 * c.PIXEL_SCALING
                 self.front_arm.center_y -= 7 * c.PIXEL_SCALING
 
             # Offsets for facing left.
             else:
-                if self.idling:
+                if self.sprinting:
                     if self.front_arm.angle >= -90 and self.front_arm.angle <= 90:
                         self.front_arm.center_x = self.center_x - (
                                 f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
-                                                          0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                                                          2 * c.PIXEL_SCALING)  # Offset for looking the other direction.
                     else:
                         self.front_arm.center_x = self.center_x - (
                                 f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
@@ -234,7 +234,7 @@ class PlayerCharacter(arcade.Sprite):
                                 f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
                                                           0 * c.PIXEL_SCALING)
 
-                self.front_arm.center_x += 3 * c.PIXEL_SCALING
+                self.front_arm.center_x += 4 * c.PIXEL_SCALING
                 self.front_arm.center_y -= 7 * c.PIXEL_SCALING
         else:
             # Regular animation.
@@ -626,6 +626,8 @@ class PlayerCharacter(arcade.Sprite):
             return
 
         def update_animation(self, delta_time: float = 1 / 60):
+            print(self.firing)
+            print(self.cur_texture)
             # Equip gun
             if self.equipped_one_handed and not self.firing:
                 self.texture = self.one_handed_texture_pair[self.character_face_direction]
@@ -633,6 +635,7 @@ class PlayerCharacter(arcade.Sprite):
 
             # Fire one-handed weapon.
             if self.firing:
+
                 if self.cur_texture > 4 * c.UPDATES_PER_FRAME:
                     self.cur_texture = 0
                 self.cur_texture += 1

@@ -1,8 +1,10 @@
 '''
-Platformer game, by Kael.
+UNEXPLORED by Kael.
 '''
 
 import arcade
+import arcade.gui
+from arcade.gui import UIManager
 import os
 import random
 from pyglet.gl import GL_NEAREST
@@ -14,6 +16,7 @@ import game_functions as f
 import game_audio as a
 import game_backgrounds as b
 import game_entities as e
+import game_gui as g
 
 
 class GameView(arcade.View):
@@ -28,6 +31,9 @@ class GameView(arcade.View):
         # Set the path to start with this program.
         file_path = os.path.dirname(os.path.abspath(__file__))
         os.chdir(file_path)
+
+        # Manages the GUI.
+        self.ui_manager = UIManager()
 
         # For if we are in fullscreen mode.
         self.is_fullscreen = False
@@ -47,6 +53,8 @@ class GameView(arcade.View):
         self.foreground_decorations_list = None
         self.explosions_list = None
         self.background_decorations_list = None
+        self.background_walls_list = None
+        self.treasure_list = None
         self.wall_list = None
         self.ladder_list = None
         self.player_list = None
@@ -89,7 +97,6 @@ class GameView(arcade.View):
         self.frame_count = 0
         self.fps_start_timer = None
         self.fps = None
-        # TODO: SHeeeeeesh
         # Set background colour.
         arcade.set_background_color(arcade.color.CORNFLOWER_BLUE)
 
@@ -108,6 +115,8 @@ class GameView(arcade.View):
     def setup(self):
         '''Set up the game here. Call this function to restart the game.'''
 
+        self.ui_manager.purge_ui_elements()
+
         # Used to keep track of our scrolling.
         self.view_bottom = 0
         self.view_left = 0
@@ -121,6 +130,7 @@ class GameView(arcade.View):
         self.background_decorations_list = arcade.SpriteList()
         self.explosions_list = arcade.SpriteList()
         self.foreground_decorations_list = arcade.SpriteList()
+        self.treasure_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
         self.coin_list = arcade.SpriteList()
         self.bullet_list = arcade.SpriteList()
@@ -149,8 +159,14 @@ class GameView(arcade.View):
         foreground_decorations_layer_name = 'Foreground Decorations'
         background_decorations_layer_name = 'Background Decorations'
 
+        # Darkened background walls.
+        background_walls_layer_name = 'Background Walls'
+
+        # The treasure at the end of the game.
+        treasure_layer_name = 'Treasure'
+
         # Map name.
-        map_name = f'resources/maps/test.tmx'
+        map_name = f'resources/maps/1.tmx'
 
         # Read in the tiled map.
         my_map = arcade.tilemap.read_tmx(map_name)
@@ -174,9 +190,14 @@ class GameView(arcade.View):
         self.foreground_decorations_list = arcade.tilemap.process_layer(my_map, foreground_decorations_layer_name,
                                                                         c.PIXEL_SCALING,
                                                                         use_spatial_hash=True)
+        # Background decorations.
         self.background_decorations_list = arcade.tilemap.process_layer(my_map, background_decorations_layer_name,
                                                                         c.PIXEL_SCALING,
                                                                         use_spatial_hash=True)
+        # Background walls.
+        # self.background_walls_list = arcade.tilemap.process_layer(my_map, background_walls_layer_name,
+        #                                                          c.PIXEL_SCALING,
+        #                                                          use_spatial_hash=True)
         '''
         # Moving Platforms.
         moving_platforms_list = arcade.tilemap.process_layer(my_map, moving_platforms_layer_name, PIXEL_SCALING)
@@ -187,12 +208,11 @@ class GameView(arcade.View):
         self.ladder_list = arcade.tilemap.process_layer(my_map, 'Ladders',
                                                         PIXEL_SCALING,
                                                         use_spatial_hash=True)
-
-        # Coins.
-        self.coin_list = arcade.tilemap.process_layer(my_map, coins_layer_name,
-                                                      PIXEL_SCALING,
-                                                      use_spatial_hash=True)
         '''
+        # Treasure (end goal).
+        self.treasure_list = arcade.tilemap.process_layer(my_map, treasure_layer_name,
+                                                          c.PIXEL_SCALING,
+                                                          use_spatial_hash=True)
 
         # Pre-load the animation frames for hit effects. We don't do this in the __init__
         # of the explosion sprite because it
@@ -241,7 +261,9 @@ class GameView(arcade.View):
 
         # Draw our sprites.
         self.backgrounds_list.draw(filter=GL_NEAREST)
+        # self.background_walls_list.draw(filter=GL_NEAREST)
         self.background_decorations_list.draw(filter=GL_NEAREST)
+        self.treasure_list.draw(filter=GL_NEAREST)
         self.player_list.draw(filter=GL_NEAREST)
         self.bullet_list.draw(filter=GL_NEAREST)
         self.explosions_list.draw(filter=GL_NEAREST)
@@ -253,8 +275,8 @@ class GameView(arcade.View):
         self.foreground_decorations_list.draw(filter=GL_NEAREST)
 
         # Draw our score on the screen, scrolling it with the viewport.
-        #score_text = f'Score: {self.score}'
-        #arcade.draw_text(score_text, 10 + self.view_left, 10 + self.view_bottom,
+        # score_text = f'Score: {self.score}'
+        # arcade.draw_text(score_text, 10 + self.view_left, 10 + self.view_bottom,
         #                 arcade.csscolor.WHITE, 32, font_name='resources/Unexplored.ttf')
 
         # Draw hit boxes.
@@ -376,7 +398,7 @@ class GameView(arcade.View):
     def on_mouse_press(self, x, y, button, modifiers):
         '''Called whenever the mouse button is clicked.'''
 
-        # Create a bullet
+        # Create a bullet.
         if self.player_sprite.equipped_one_handed and button == arcade.MOUSE_BUTTON_LEFT:
             self.player_sprite.front_arm.firing = True
             bullet = arcade.Sprite('resources/images/effects/bullet_projectile.png', c.PIXEL_SCALING)
@@ -384,7 +406,7 @@ class GameView(arcade.View):
 
             # Position the bullet at the player's front arm.
             start_x = self.player_sprite.front_arm.center_x
-            start_y = self.player_sprite.front_arm.center_y # TODO: Change this to gun position.
+            start_y = self.player_sprite.front_arm.center_y  # TODO: Change this to gun position.
             bullet.center_x = start_x
             bullet.center_y = start_y
 
@@ -407,7 +429,7 @@ class GameView(arcade.View):
 
             # Taking into account the angle, calculate our change_x
             # and change_y. Velocity is how fast the bullet travels.
-            bullet.change_x = (math.cos(angle) * c.BULLET_SPEED) + self.player_sprite.change_x  # Account for momentum.
+            bullet.change_x = (math.cos(angle) * c.BULLET_SPEED)
             bullet.change_y = (math.sin(angle) * c.BULLET_SPEED)
 
             # Reposition bullet
@@ -516,6 +538,19 @@ class GameView(arcade.View):
             if bullet.bottom > c.CULL_DISTANCE_Y + self.player_sprite.center_y or bullet.top < c.CULL_DISTANCE_Y * -1 + self.player_sprite.center_y or bullet.right < c.CULL_DISTANCE_X * -1 + self.player_sprite.center_x or bullet.left > c.CULL_DISTANCE_X + self.player_sprite.center_x:
                 bullet.remove_from_sprite_lists()
 
+            # Check if the player hit the treasure.
+            for player in self.player_list:
+                # Check to see if the player collided with it.
+                hit_list = arcade.check_for_collision_with_list(player, self.treasure_list)
+
+                # If it did, get rid of the bullet
+                if len(hit_list) > 0:
+                    # End the game.
+                    f.screen_fade.change_fade(target=0, change=4)
+                    end_view = EndView()
+                    self.window.show_view(end_view)
+
+
         # Update the environment backgrounds.
         self.background_0.follow_x = self.player_sprite.center_x
         self.background_0.follow_y = self.player_sprite.center_y
@@ -572,6 +607,10 @@ class GameView(arcade.View):
         self.mouse_position_x = x
         self.mouse_position_y = y
 
+    def on_hide_view(self):
+        # For when the view is switched.
+        self.ui_manager.unregister_handlers()
+
 
 class MainMenuView(arcade.View):
     '''The main menu that shows when you start the game.'''
@@ -579,6 +618,9 @@ class MainMenuView(arcade.View):
     def __init__(self):
         '''This is run once when we switch to this view.'''
         super().__init__()
+
+        # For managing the GUI.
+        self.ui_manager = UIManager()
 
         # Reset the viewport, necessary if we have a scrolling game and we need
         # to reset the viewport back to the start so we can see what we draw.
@@ -592,7 +634,23 @@ class MainMenuView(arcade.View):
 
     def on_show(self):
         '''This is run once when we switch to this view.'''
+        self.ui_manager.purge_ui_elements()
+        y_slot = self.window.height // 4
+        left_column_x = self.window.width // 4
+        right_column_x = 3 * self.window.width // 4
 
+        button_normal = arcade.load_texture('resources/images/ui/new_game_regular.png')
+        hovered_texture = arcade.load_texture('resources/images/ui/new_game_hover.png')
+        pressed_texture = arcade.load_texture('resources/images/ui/new_game_hover.png')
+        button = g.StartButton(
+            center_x = left_column_x - 50 * c.PIXEL_SCALING,
+            center_y = y_slot * 3,
+            normal_texture = button_normal,
+            hover_texture = hovered_texture,
+            press_texture = pressed_texture,
+            )
+
+        self.ui_manager.add_ui_element(button)
         self.main_menu_image = arcade.Sprite()
         self.main_menu_image.texture = self.menu_texture
         self.main_menu_image.scale = c.PIXEL_SCALING
@@ -614,16 +672,17 @@ class MainMenuView(arcade.View):
     def on_update(self, delta_time: float):
         '''For updating the scenes and animations.'''
         if f.screen_fade.fade:
+            self.ui_manager.purge_ui_elements()
             f.screen_fade.change_fade(target=255, change=4)
-
-    def on_mouse_press(self, x, y, button, modifiers):
-        '''If the user presses the mouse button, start the intro.'''
-        intro_view = IntroView()
-        f.screen_fade.fade = True
 
         # If sufficiently dark, move to intro view.
         if f.screen_fade.alpha >= 250:
+            intro_view = IntroView()
             self.window.show_view(intro_view)
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        '''If the user presses the mouse button, start the intro.'''
+
 
 
 class IntroView(arcade.View):
@@ -632,6 +691,9 @@ class IntroView(arcade.View):
     def __init__(self):
         '''This is run once when we switch to this view.'''
         super().__init__()
+
+        # For managing the GUI.
+        self.ui_manager = UIManager()
 
         # Reset the viewport, necessary if we have a scrolling game and we need
         # to reset the viewport back to the start so we can see what we draw.
@@ -663,6 +725,8 @@ class IntroView(arcade.View):
 
     def on_show(self):
         '''This is run once when we switch to this view.'''
+
+        self.ui_manager.purge_ui_elements()
 
         # Reset the viewport, necessary if we have a scrolling game and we need
         # to reset the viewport back to the start so we can see what we draw.
@@ -696,6 +760,59 @@ class IntroView(arcade.View):
         game_view = GameView()
         game_view.setup()
         self.window.show_view(game_view)
+
+
+class EndView(arcade.View):
+    '''The end view that shows when the player finds the treasure and ends the game.'''
+
+    def __init__(self):
+        '''This is run once when we switch to this view.'''
+        super().__init__()
+
+        # Reset the viewport, necessary if we have a scrolling game and we need
+        # to reset the viewport back to the start so we can see what we draw.
+        arcade.set_viewport(0, c.SCREEN_WIDTH - 1, 0, c.SCREEN_HEIGHT - 1)
+
+        self.end_image_list = arcade.SpriteList()
+        self.image_texture = arcade.load_texture('resources/images/ui/main_menu.png')
+        self.end_image = None
+
+        self.fade_list = arcade.SpriteList()
+
+    def on_show(self):
+        '''This is run once when we switch to this view.'''
+
+        self.end_image = arcade.Sprite()
+        self.end_image.texture = self.image_texture
+        self.end_image.scale = c.PIXEL_SCALING
+        self.end_image.center_x = c.SCREEN_WIDTH / 2
+        self.end_image.center_y = c.SCREEN_HEIGHT / 2
+        self.end_image_list.append(self.end_image)
+        # Reset the viewport, necessary if we have a scrolling game and we need
+        # to reset the viewport back to the start so we can see what we draw.
+        arcade.set_viewport(0, c.SCREEN_WIDTH - 1, 0, c.SCREEN_HEIGHT - 1)
+
+        self.fade_list.append(f.screen_fade)
+
+    def on_draw(self):
+        '''Draw this view.'''
+        arcade.start_render()
+        self.end_image_list.draw(filter=GL_NEAREST)
+        self.fade_list.draw(filter=GL_NEAREST)
+
+    def on_update(self, delta_time: float):
+        '''For updating the scenes and animations.'''
+        if f.screen_fade.fade:
+            f.screen_fade.change_fade(target=255, change=4)
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        '''If the user presses the mouse button, start the intro.'''
+        intro_view = IntroView()
+        f.screen_fade.fade = True
+
+        # If sufficiently dark, move to intro view.
+        if f.screen_fade.alpha >= 250:
+            self.window.show_view(intro_view)
 
 
 def main():
