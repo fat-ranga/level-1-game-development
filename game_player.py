@@ -140,6 +140,7 @@ class PlayerCharacter(arcade.Sprite):
         self.legs.character_face_direction = self.character_face_direction
 
         # Position the head using body position and x, y offsets listed in 'game_functions.py'.
+        # TODO: Actual comments here
         if self.character_face_direction == c.RIGHT_FACING:
             if not self.idling:
                 if self.head.angle >= -90 and self.head.angle <= 90:
@@ -626,8 +627,8 @@ class PlayerCharacter(arcade.Sprite):
             return
 
         def update_animation(self, delta_time: float = 1 / 60):
-            print(self.firing)
-            print(self.cur_texture)
+            #print(self.firing) TODO: remove these once issue is solved
+            #print(self.cur_texture)
             # Equip gun
             if self.equipped_one_handed and not self.firing:
                 self.texture = self.one_handed_texture_pair[self.character_face_direction]

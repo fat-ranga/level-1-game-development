@@ -27,9 +27,9 @@ CULL_DISTANCE_Y = 2000
 
 # Movement speed of player, in pixels per frame.
 PLAYER_WALK_SPEED = 4.6
-PLAYER_RUN_SPEED = 30.3 #9.3
-GRAVITY = 0.91
-PLAYER_JUMP_SPEED = 50
+PLAYER_RUN_SPEED = 10.3
+GRAVITY = 0.95
+PLAYER_JUMP_SPEED = 28
 UPDATES_PER_FRAME = 10
 EFFECT_UPDATES_PER_FRAME = 5
 
@@ -51,7 +51,7 @@ RIGHT_FACING = 0
 LEFT_FACING = 1
 
 # Bullet speed, in pixels per frame.
-BULLET_SPEED = 50
+BULLET_SPEED = 55
 
 # Precalculated random numbers, used instead of random() for performance.
 RANDOM_NUMBERS_8 = []

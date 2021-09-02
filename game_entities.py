@@ -37,6 +37,28 @@ class Explosion(arcade.Sprite):
             self.remove_from_sprite_lists()
 
 
+class ExplosiveBarrel(arcade.Sprite):
+    '''An explosive barrel that explodes when you shoot it.'''
+
+    def __init__(self, texture_list):
+        super().__init__()
+
+        # Start at the first frame
+        self.current_texture = 0
+        self.textures = texture_list
+
+    def update(self):
+
+        # Update to the next frame of the animation. If we are at the end
+        # of our frames, then delete this sprite.
+        self.current_texture += 1
+        if self.current_texture < len(self.textures * c.EFFECT_UPDATES_PER_FRAME):
+            frame = self.current_texture // c.EFFECT_UPDATES_PER_FRAME
+            self.set_texture(frame)
+        else:
+            self.remove_from_sprite_lists()
+
+
 class Enemy(arcade.Sprite):
     '''Base class for the enemy.'''
 
