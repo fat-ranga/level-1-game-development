@@ -230,9 +230,14 @@ class GameView(arcade.View):
                                                                         c.PIXEL_SCALING,
                                                                         use_spatial_hash=True)
         # Background walls.
-        # self.background_walls_list = arcade.tilemap.process_layer(my_map, background_walls_layer_name,
-        #                                                          c.PIXEL_SCALING,
-        #                                                          use_spatial_hash=True)
+        self.background_walls_list = arcade.tilemap.process_layer(my_map, background_walls_layer_name,
+                                                                  c.PIXEL_SCALING,
+                                                                  use_spatial_hash=True)
+
+        # Tint all the sprites in this background walls list to a darker colour to differentiate it
+        # from the other layers.
+        for wall in self.background_walls_list:
+            wall.color = [130, 130, 140]
         '''
         # Moving Platforms.
         moving_platforms_list = arcade.tilemap.process_layer(my_map, moving_platforms_layer_name, PIXEL_SCALING)
@@ -301,7 +306,7 @@ class GameView(arcade.View):
 
         # Draw our sprites.
         self.backgrounds_list.draw(filter=GL_NEAREST)
-        # self.background_walls_list.draw(filter=GL_NEAREST)
+        self.background_walls_list.draw(filter=GL_NEAREST)
         self.background_decorations_list.draw(filter=GL_NEAREST)
         self.treasure_list.draw(filter=GL_NEAREST)
         self.player_list.draw(filter=GL_NEAREST)
@@ -565,6 +570,8 @@ class GameView(arcade.View):
             # Loop through each barrel we hit (if any) and remove it.
             for barrel in barrel_hit_list:
                 # TODO: the barrel getting destroyed animation.
+
+                arcade.play_sound(a.sound[f'explosion'])
 
                 # Remove the barrel.
                 barrel.remove_from_sprite_lists()

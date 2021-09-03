@@ -6,6 +6,9 @@ Import this as 'a' for consistency.
 '''
 import arcade
 
+# Example usage.
+# arcade.play_sound(a.sound[f'jump_1'])
+
 # Contains the names of all the audio files in the game
 # once the 'add_audio_to_list()' is called.
 audio_list = []
