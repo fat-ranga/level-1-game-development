@@ -913,6 +913,9 @@ class EndView(arcade.View):
 
     def on_update(self, delta_time: float):
         '''For updating the scenes and animations.'''
+        # Make sure it is positioned correctly.
+        f.screen_fade.center_x = c.SCREEN_WIDTH // 2#TODO: Set this to view left or something.
+        f.screen_fade.center_y = c.SCREEN_HEIGHT // 2
         f.screen_fade.change_fade(target=0, change=4)
         arcade.set_viewport(0, c.SCREEN_WIDTH - 1, 0, c.SCREEN_HEIGHT - 1)
 
