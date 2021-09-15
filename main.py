@@ -17,6 +17,7 @@ import game_audio as a
 import game_backgrounds as b
 import game_entities as e
 import game_gui as g
+import game_items as i
 
 
 class GameView(arcade.View):
@@ -59,10 +60,12 @@ class GameView(arcade.View):
         self.background_decorations_list = None
         self.background_walls_list = None
         self.treasure_list = None
+        self.grass_list = None
         self.wall_list = None
         self.ladder_list = None
         self.player_list = None
         self.bullet_list = None
+        self.items_list = None
         self.fade_list = None
         self.user_interface_list = None
 
@@ -146,8 +149,10 @@ class GameView(arcade.View):
         self.explosions_list = arcade.SpriteList()
         self.foreground_decorations_list = arcade.SpriteList()
         self.treasure_list = arcade.SpriteList()
+        self.grass_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
         self.coin_list = arcade.SpriteList()
+        self.items_list = arcade.SpriteList()
         self.bullet_list = arcade.SpriteList()
         self.fade_list = arcade.SpriteList()
         self.user_interface_list = arcade.SpriteList()
@@ -174,6 +179,9 @@ class GameView(arcade.View):
         # Name of the layer in the file that has our platforms/walls.
         walls_layer_name = 'Walls'
         moving_platforms_layer_name = 'Moving Platforms'
+
+        # Layer for the grass that goes on top of the grass blocks.
+        grass_layer_name = 'Grass'
 
         # Name of the layer that has items for pick-up.
         coins_layer_name = 'Coins'
@@ -231,6 +239,10 @@ class GameView(arcade.View):
                                                                         use_spatial_hash=True)
         # Background walls.
         self.background_walls_list = arcade.tilemap.process_layer(my_map, background_walls_layer_name,
+                                                                  c.PIXEL_SCALING,
+                                                                  use_spatial_hash=True)
+        # Grass.
+        self.grass_list = arcade.tilemap.process_layer(my_map, grass_layer_name,
                                                                   c.PIXEL_SCALING,
                                                                   use_spatial_hash=True)
 
@@ -309,11 +321,13 @@ class GameView(arcade.View):
         self.background_walls_list.draw(filter=GL_NEAREST)
         self.background_decorations_list.draw(filter=GL_NEAREST)
         self.treasure_list.draw(filter=GL_NEAREST)
+        self.items_list.draw(filter=GL_NEAREST)
         self.player_list.draw(filter=GL_NEAREST)
         self.bullet_list.draw(filter=GL_NEAREST)
         self.barrel_list.draw(filter=GL_NEAREST)
         self.explosions_list.draw(filter=GL_NEAREST)
         self.wall_list.draw(filter=GL_NEAREST)
+        self.grass_list.draw(filter=GL_NEAREST)
         '''
         self.ladder_list.draw(filter=GL_NEAREST)
         self.coin_list.draw(filter=GL_NEAREST)
@@ -409,7 +423,33 @@ class GameView(arcade.View):
             self.left_pressed = True
         elif key == arcade.key.D:
             self.right_pressed = True
+        elif key == arcade.key.KEY_1:
+            # For equipping the two-handed weapon.
+
+            # De-equip other weapon. # TODO: Fix this equipping thingy.
+            if self.player_sprite.equipped_one_handed:
+                self.player_sprite.equipped_one_handed = False
+                self.player_sprite.equipped_two_handed = True
+
+            # De-equip weapon and have no weapons in hand if gun is already equipped.
+            if self.player_sprite.equipped_two_handed:
+                self.player_sprite.equipped_two_handed = False
+            elif not self.player_sprite.equipped_two_handed:
+                self.player_sprite.equipped_two_handed = True
+
+            if self.player_sprite.equipped_two_handed:
+                self.player_sprite.equipped_any = True
+            else:
+                self.player_sprite.equipped_any = False
         elif key == arcade.key.KEY_2:
+            # For equipping the one-handed weapon.
+
+            # De-equip other weapon.
+            if self.player_sprite.equipped_two_handed:
+                self.player_sprite.equipped_two_handed = False
+                self.player_sprite.equipped_one_handed = True
+
+            # De-equip weapon and have no weapons in hand if gun is already equipped.
             if self.player_sprite.equipped_one_handed:
                 self.player_sprite.equipped_one_handed = False
             elif not self.player_sprite.equipped_one_handed:
@@ -419,6 +459,8 @@ class GameView(arcade.View):
                 self.player_sprite.equipped_any = True
             else:
                 self.player_sprite.equipped_any = False
+
+
 
         self.process_keychange()
 
@@ -615,14 +657,7 @@ class GameView(arcade.View):
                 self.game_won = True
                 # End the game.
 
-        if self.game_won:
-            # If sufficiently dark, move to end view.
-            f.screen_fade.center_x = self.view_left + c.SCREEN_WIDTH // 2
-            f.screen_fade.center_y = self.view_bottom + c.SCREEN_HEIGHT // 2
-            f.screen_fade.change_fade(target=255, change=4)
-            if f.screen_fade.alpha >= 250:
-                end_view = EndView()
-                self.window.show_view(end_view)
+
 
         # Update the environment backgrounds.
         self.background_0.follow_x = self.player_sprite.center_x
@@ -672,6 +707,16 @@ class GameView(arcade.View):
 
             # Stop the draw timer, and calculate total on_draw time.
             self.processing_time = timeit.default_timer() - start_time
+
+        # Do the screen fade here after the viewport code so that it doesn't move around.
+        if self.game_won:
+            # If sufficiently dark, move to end view.
+            f.screen_fade.center_x = self.view_left + c.SCREEN_WIDTH // 2
+            f.screen_fade.center_y = self.view_bottom + c.SCREEN_HEIGHT // 2
+            f.screen_fade.change_fade(target=255, change=4)
+            if f.screen_fade.alpha >= 250:
+                end_view = EndView()
+                self.window.show_view(end_view)
 
         # Position the reticle. This is after the viewport code so that the view_left and view_bottom are updated.
         self.reticle.visible = True

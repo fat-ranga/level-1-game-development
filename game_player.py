@@ -19,6 +19,7 @@ import math
 import game_constants as c
 import game_functions as f
 import game_audio as a
+import game_items as itm
 
 
 class PlayerCharacter(arcade.Sprite):
@@ -49,6 +50,10 @@ class PlayerCharacter(arcade.Sprite):
 
         # Whether the player has a one-handed gun or not.
         self.equipped_one_handed = False
+
+        # TODO: GUN
+        self.gun = itm.Weapon()
+        self.gun.equip(follow_x=self.center_x, follow_y=self.center_y)
 
         # Whether the player has a two-handed gun or not.
         self.equipped_two_handed = False

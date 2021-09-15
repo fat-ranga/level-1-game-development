@@ -1,7 +1,7 @@
 '''
 For all the items, including weapons, present in the game.
 
-Import this as 'i' for consistency.
+Import this as 'itm' for consistency.
 '''
 
 import arcade
@@ -33,14 +33,17 @@ class Weapon(arcade.Sprite):
         self.scale = c.PIXEL_SCALING
 
         # Should we show the texture? Used for equipping/de-equipping different weapons.
+        self.holstered = False
+
+        # Is the gun part of the inventory of an enemy/the player?
         self.equipped = False
 
         self.one_handed = False
         self.two_handed = False
 
-        self.current_ammo = 0
-        self.max_ammo = 0
-        self.clip_ammo = 0
+        self.current_ammo = 10
+        self.max_ammo = 40
+        self.clip_ammo = 10
 
         # Sprite texture.
         self.glock_17_texture = arcade.load_texture('resources/images/items/glock_17/default.png')
@@ -54,10 +57,22 @@ class Weapon(arcade.Sprite):
         self.follow_x = None
         self.follow_y = None
 
-    def update(self):
+    def update_position(self, follow_x, follow_y):
         # Go to wherever the parent sprite is if the weapon is equipped.
         if self.equipped:
             self.center_x = self.follow_x + (self.offset_x * c.PIXEL_SCALING)
             self.center_y = self.follow_y + (self.offset_y * c.PIXEL_SCALING)
+
+    def equip(self, follow_x, follow_y):
+        # For when the gun is picked up by the player.
+
+        # Follow the player x and y.
+        self.follow_x = follow_x
+        self.follow_y = follow_y
+
+        # Equip the weapon and brandish it.
+        self.equipped = True
+        self.holstered = False
+
 
 

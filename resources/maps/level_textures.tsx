@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.5" tiledversion="1.7.1" name="level_textures" tilewidth="128" tileheight="128" tilecount="17" columns="0">
+<tileset version="1.5" tiledversion="1.7.1" name="level_textures" tilewidth="128" tileheight="128" tilecount="16" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="0">
   <image width="16" height="16" source="../images/tiles/algae_rock.png"/>
@@ -48,11 +48,5 @@
  </tile>
  <tile id="21">
   <image width="32" height="64" source="../images/tiles/Vines.png"/>
- </tile>
- <tile id="22">
-  <image width="16" height="16" source="../images/tiles/water_0.png"/>
-  <objectgroup draworder="index" id="2">
-   <object id="1" x="0" y="2" width="16" height="14"/>
-  </objectgroup>
  </tile>
 </tileset>
