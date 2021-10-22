@@ -1,8 +1,8 @@
-'''
+"""
 Where all the game's general functions are stored.
 
 Import this as 'f' for consistency.
-'''
+"""
 
 import arcade
 import os
@@ -13,7 +13,7 @@ import game_constants as c
 
 
 def load_texture_pair(filename):
-    '''Loads a texture pair, with the second being a mirror image.'''
+    """Loads a texture pair, with the second being a mirror image."""
     return [
         arcade.load_texture(filename),
         arcade.load_texture(filename, flipped_horizontally=True)
@@ -21,8 +21,8 @@ def load_texture_pair(filename):
 
 
 def load_texture_pair_vertical_flip(filename):
-    '''Loads a texture pair, with the second being a vertical mirror image.
-        Used for sprites that both rotate with angles and face left or right.'''
+    """Loads a texture pair, with the second being a vertical mirror image.
+        Used for sprites that both rotate with angles and face left or right."""
     return [
         arcade.load_texture(filename),
         arcade.load_texture(filename, flipped_vertically=True)
@@ -30,7 +30,7 @@ def load_texture_pair_vertical_flip(filename):
 
 
 class BlackScreenFade(arcade.Sprite):
-    '''Uses a black image to create a fading effect.'''
+    """Uses a black image to create a fading effect."""
 
     def __init__(self):
         # Set up parent class.
@@ -48,7 +48,7 @@ class BlackScreenFade(arcade.Sprite):
         self.increasing = False
 
     def change_fade(self, target, change):
-        '''Changes the opacity over a set amount of time.'''
+        """Changes the opacity over a set amount of time."""
         # Change opacity of this to create fading to and from black effect.
 
         if target > self.alpha:
@@ -112,9 +112,9 @@ head_positions_walk = [[-2, 24], [-2, 25], [-2, 24], [-2, 22], [-2, 24], [-2, 25
 
 
 def add_frames_to_list():
-    '''Loads all the names of the frame files and puts them into frame_list.
+    """Loads all the names of the frame files and puts them into frame_list.
         Also compiles all the 'head_positions_(x)' lists into one big list.
-        MUST ALL BE IN SAME ORDER!'''
+        MUST ALL BE IN SAME ORDER!"""
 
     # Compiling positions into big list.
     for i in head_positions_idle_to_jump:
@@ -149,8 +149,8 @@ def load_frames_and_positions():
 
 
 def get_head_offset_x(frame):
-    '''Returns the x co-ordinates for where the centre of the head
-        should be from an animation frame.'''
+    """Returns the x co-ordinates for where the centre of the head
+        should be from an animation frame."""
     # Head position.
     head_x = frame_head_position[f'{frame}']
 
@@ -158,8 +158,8 @@ def get_head_offset_x(frame):
 
 
 def get_head_offset_y(frame):
-    '''Returns the y co-ordinates for where the centre of the head
-        should be from an animation frame.'''
+    """Returns the y co-ordinates for where the centre of the head
+        should be from an animation frame."""
     # Head position.
     head_y = frame_head_position[f'{frame}']
 
@@ -190,9 +190,9 @@ arms_positions_walk = [[-2, 24], [-2, 25], [-2, 24], [-2, 22], [-2, 24], [-2, 25
 
 
 def arms_add_frames_to_list():
-    '''Loads all the names of the frame files and puts them into frame_list.
+    """Loads all the names of the frame files and puts them into frame_list.
         Also compiles all the 'arms_positions_(x)' lists into one big list.
-        MUST ALL BE IN SAME ORDER!'''
+        MUST ALL BE IN SAME ORDER!"""
 
     # Compiling positions into big list.
     for i in arms_positions_idle_to_jump:
@@ -227,8 +227,8 @@ def arms_load_frames_and_positions():
 
 
 def get_arms_offset_x(frame):
-    '''Returns the x co-ordinates for where the centre of the head
-        should be from an animation frame.'''
+    """Returns the x co-ordinates for where the centre of the head
+        should be from an animation frame."""
     # Arm position.
     arm_x = frame_arms_position[f'{frame}']
 
@@ -236,8 +236,8 @@ def get_arms_offset_x(frame):
 
 
 def get_arms_offset_y(frame):
-    '''Returns the y co-ordinates for where the centre of the head
-        should be from an animation frame.'''
+    """Returns the y co-ordinates for where the centre of the head
+        should be from an animation frame."""
     # Arm position.
     arm_y = frame_arms_position[f'{frame}']
 

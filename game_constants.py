@@ -1,8 +1,8 @@
-'''
+"""
 This is where all the constants are stored.
 
 Import this as 'c' for consistency.
-'''
+"""
 
 # Constants.
 SCREEN_WIDTH = 1920
@@ -15,7 +15,7 @@ PIXEL_SCALING = 4
 INTRO_SCALING = 3
 UI_SCALING = 4
 SPRITE_PIXEL_SIZE = 128
-GRID_PIXEL_SIZE = PIXEL_SCALING
+GRID_PIXEL_SIZE = 32
 
 # Size of the map
 MAP_WIDTH = 256 * PIXEL_SCALING

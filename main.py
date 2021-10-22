@@ -1,6 +1,6 @@
-'''
+"""
 UNEXPLORED by Kael.
-'''
+"""
 
 import arcade
 import arcade.gui
@@ -17,14 +17,14 @@ import game_audio as a
 import game_backgrounds as b
 import game_entities as e
 import game_gui as g
-import game_items as i
+import game_items as itm
 
 
 class GameView(arcade.View):
-    '''Main application class.'''
+    """Main application class."""
 
     def __init__(self):
-        '''Initialiser for the game.'''
+        """Initialiser for the game."""
 
         # Call the parent class and set up the window.
         super().__init__()
@@ -131,7 +131,7 @@ class GameView(arcade.View):
         f.arms_load_frames_and_positions()
 
     def setup(self):
-        '''Set up the game here. Call this function to restart the game.'''
+        """Set up the game here. Call this function to restart the game."""
 
         self.ui_manager.purge_ui_elements()
 
@@ -205,8 +205,13 @@ class GameView(arcade.View):
         # Read in the tiled map.
         my_map = arcade.tilemap.read_tmx(map_name)
 
+        # TODO: GUN
+        self.gun = itm.Weapon()
+        self.gun.equip(follow_x=self.player_sprite.center_x, follow_y=self.player_sprite.center_y)
+        self.items_list.append(self.gun)
+
         # Calculate the right edge of the my_map in pixels.
-        self.end_of_map = my_map.map_size.width * c.GRID_PIXEL_SIZE
+        self.end_of_map = my_map.map_size.width * (c.GRID_PIXEL_SIZE * c.PIXEL_SCALING)
 
         # Add and reset fading layer.
         f.screen_fade.alpha = 0
@@ -231,8 +236,8 @@ class GameView(arcade.View):
 
         # Explosive barrels.
         self.barrel_list = arcade.tilemap.process_layer(my_map, barrels_layer_name,
-                                                                c.PIXEL_SCALING,
-                                                                use_spatial_hash=True)
+                                                        c.PIXEL_SCALING,
+                                                        use_spatial_hash=True)
         # Background decorations.
         self.background_decorations_list = arcade.tilemap.process_layer(my_map, background_decorations_layer_name,
                                                                         c.PIXEL_SCALING,
@@ -243,8 +248,8 @@ class GameView(arcade.View):
                                                                   use_spatial_hash=True)
         # Grass.
         self.grass_list = arcade.tilemap.process_layer(my_map, grass_layer_name,
-                                                                  c.PIXEL_SCALING,
-                                                                  use_spatial_hash=True)
+                                                       c.PIXEL_SCALING,
+                                                       use_spatial_hash=True)
 
         # Tint all the sprites in this background walls list to a darker colour to differentiate it
         # from the other layers.
@@ -293,7 +298,7 @@ class GameView(arcade.View):
                                                              ladders=self.ladder_list)
 
     def on_draw(self):
-        '''Render the screen.'''
+        """Render the screen."""
 
         # Start timing how long this takes
         start_time = timeit.default_timer()
@@ -367,7 +372,7 @@ class GameView(arcade.View):
         self.draw_time = timeit.default_timer() - start_time
 
     def process_keychange(self):
-        '''Called when we change a key up/down or we move on/off a ladder.'''
+        """Called when we change a key up/down or we move on/off a ladder."""
 
         # Process up/down.
         if self.up_pressed and not self.down_pressed:
@@ -411,13 +416,13 @@ class GameView(arcade.View):
                 self.player_sprite.sprinting = False
 
     def on_key_press(self, key, modifiers):
-        '''Called whenever a key is pressed.'''
+        """Called whenever a key is pressed."""
 
         if key == arcade.key.LSHIFT:
             self.shift_pressed = True
-        elif key == arcade.key.W:
+        elif key == arcade.key.W or key == arcade.key.SPACE:
             self.up_pressed = True
-        elif key == arcade.key.S:
+        elif key == arcade.key.S or key == arcade.key.LCTRL:
             self.down_pressed = True
         elif key == arcade.key.A:
             self.left_pressed = True
@@ -430,12 +435,12 @@ class GameView(arcade.View):
             if self.player_sprite.equipped_one_handed:
                 self.player_sprite.equipped_one_handed = False
                 self.player_sprite.equipped_two_handed = True
-
-            # De-equip weapon and have no weapons in hand if gun is already equipped.
-            if self.player_sprite.equipped_two_handed:
-                self.player_sprite.equipped_two_handed = False
-            elif not self.player_sprite.equipped_two_handed:
-                self.player_sprite.equipped_two_handed = True
+            else:
+                # De-equip weapon and have no weapons in hand if gun is already equipped.
+                if self.player_sprite.equipped_two_handed:
+                    self.player_sprite.equipped_two_handed = False
+                elif not self.player_sprite.equipped_two_handed:
+                    self.player_sprite.equipped_two_handed = True
 
             if self.player_sprite.equipped_two_handed:
                 self.player_sprite.equipped_any = True
@@ -448,31 +453,29 @@ class GameView(arcade.View):
             if self.player_sprite.equipped_two_handed:
                 self.player_sprite.equipped_two_handed = False
                 self.player_sprite.equipped_one_handed = True
-
-            # De-equip weapon and have no weapons in hand if gun is already equipped.
-            if self.player_sprite.equipped_one_handed:
-                self.player_sprite.equipped_one_handed = False
-            elif not self.player_sprite.equipped_one_handed:
-                self.player_sprite.equipped_one_handed = True
+            else:
+                # De-equip weapon and have no weapons in hand if gun is already equipped.
+                if self.player_sprite.equipped_one_handed:
+                    self.player_sprite.equipped_one_handed = False
+                elif not self.player_sprite.equipped_one_handed:
+                    self.player_sprite.equipped_one_handed = True
 
             if self.player_sprite.equipped_one_handed:
                 self.player_sprite.equipped_any = True
             else:
                 self.player_sprite.equipped_any = False
 
-
-
         self.process_keychange()
 
     def on_key_release(self, key, modifiers):
-        '''Called when the user releases a key.'''
+        """Called when the user releases a key."""
 
         if key == arcade.key.LSHIFT:
             self.shift_pressed = False
-        elif key == arcade.key.W:
+        elif key == arcade.key.W or key == arcade.key.SPACE:
             self.up_pressed = False
             self.jump_needs_reset = False
-        elif key == arcade.key.S:
+        elif key == arcade.key.S or key == arcade.key.LCTRL:
             self.down_pressed = False
         elif key == arcade.key.A:
             self.left_pressed = False
@@ -482,12 +485,12 @@ class GameView(arcade.View):
         self.process_keychange()
 
     def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
-        '''Called whenever the user uses the scroll on the mouse.
-            Used mostly for weapon selection for the player.'''
+        """Called whenever the user uses the scroll on the mouse.
+            Used mostly for weapon selection for the player."""
         pass
 
     def on_mouse_press(self, x, y, button, modifiers):
-        '''Called whenever the mouse button is clicked.'''
+        """Called whenever the mouse button is clicked."""
 
         # Create a bullet.
         if self.player_sprite.equipped_one_handed and button == arcade.MOUSE_BUTTON_LEFT:
@@ -508,7 +511,7 @@ class GameView(arcade.View):
             dest_y = y + self.view_bottom
 
             # Do maths to calculate how to get the bullet to the destination.
-            # Calculation the angle in radians between the start points
+            # Calculate the angle in radians between the start points
             # and end points. This is the angle the bullet will travel.
             x_diff = dest_x - start_x
             y_diff = dest_y - start_y
@@ -529,10 +532,10 @@ class GameView(arcade.View):
 
             # Add the bullet to the appropriate lists
             self.bullet_list.append(bullet)
-            arcade.play_sound(a.sound['glock_17_fire'])
+            arcade.play_sound(a.sound["glock_17_fire"])
 
     def on_update(self, delta_time):
-        '''Movement and game logic.'''
+        """Movement and game logic."""
 
         # Start timing how long this takes.
         start_time = timeit.default_timer()
@@ -544,7 +547,6 @@ class GameView(arcade.View):
         # view_left and view_bottom added so that the position works when the scrolling screen moves.
         self.player_sprite.acquire_mouse_position(self.mouse_position_x + self.view_left,
                                                   self.mouse_position_y + self.view_bottom)
-
 
         # Move the player with the physics engine.
         self.physics_engine.update()
@@ -564,6 +566,12 @@ class GameView(arcade.View):
 
         # Move body parts to player's position and update checking variables.
         self.player_list.update_animation(delta_time)
+
+        # Position the gun to the player front_arm sprite.
+        self.gun.update_position(follow_x=self.player_sprite.front_arm.center_x,
+                                 follow_y=self.player_sprite.front_arm.center_y,
+                                 angle=self.player_sprite.front_arm.angle,
+                                 direction=self.player_sprite.character_face_direction)
 
         self.coin_list.update_animation(delta_time)
 
@@ -646,18 +654,15 @@ class GameView(arcade.View):
             if bullet.bottom > c.CULL_DISTANCE_Y + self.player_sprite.center_y or bullet.top < c.CULL_DISTANCE_Y * -1 + self.player_sprite.center_y or bullet.right < c.CULL_DISTANCE_X * -1 + self.player_sprite.center_x or bullet.left > c.CULL_DISTANCE_X + self.player_sprite.center_x:
                 bullet.remove_from_sprite_lists()
 
-
         # See if we hit the treasure.
         if not self.game_won:
             treasure_hit_list = arcade.check_for_collision_with_list(self.player_sprite.legs,
                                                                      self.treasure_list)
             # Loop through each treasure we hit.
             if treasure_hit_list:
-                # Change the game to 'won'. Accessed by the if statement below.
+                # Change the game to 'won'. Accessed by the if statement after the viewport code.
                 self.game_won = True
                 # End the game.
-
-
 
         # Update the environment backgrounds.
         self.background_0.follow_x = self.player_sprite.center_x
@@ -699,6 +704,12 @@ class GameView(arcade.View):
             self.view_bottom = int(self.view_bottom)
             self.view_left = int(self.view_left)
 
+            # These two make sure the viewport doesn't go off the map.
+            if self.view_left <= 0:
+                self.view_left = 0
+            if self.view_left + c.SCREEN_WIDTH >= self.end_of_map:
+                self.view_left = self.end_of_map - c.SCREEN_WIDTH
+
             # Do the scrolling.
             arcade.set_viewport(self.view_left,
                                 c.SCREEN_WIDTH + self.view_left,
@@ -725,7 +736,7 @@ class GameView(arcade.View):
         self.user_interface_list.update()
 
     def on_mouse_motion(self, x, y, dx, dy):
-        '''Handle Mouse Motion.'''
+        """Handle Mouse Motion."""
 
         # Update the position of the mouse.
         self.mouse_position_x = x
@@ -737,10 +748,10 @@ class GameView(arcade.View):
 
 
 class MainMenuView(arcade.View):
-    '''The main menu that shows when you start the game.'''
+    """The main menu that shows when you start the game."""
 
     def __init__(self):
-        '''This is run once when we switch to this view.'''
+        """This is run once when we switch to this view."""
         super().__init__()
 
         # For managing the GUI.
@@ -757,7 +768,7 @@ class MainMenuView(arcade.View):
         self.fade_list = arcade.SpriteList()
 
     def on_show(self):
-        '''This is run once when we switch to this view.'''
+        """This is run once when we switch to this view."""
 
         # Get rid of any existing ui elements.
         self.ui_manager.purge_ui_elements()
@@ -795,13 +806,13 @@ class MainMenuView(arcade.View):
         self.fade_list.append(f.screen_fade)
 
     def on_draw(self):
-        '''Draw this view.'''
+        """Draw this view."""
         arcade.start_render()
         self.main_menu_list.draw(filter=GL_NEAREST)
         self.fade_list.draw(filter=GL_NEAREST)
 
     def on_update(self, delta_time: float):
-        '''For updating the scenes and animations.'''
+        """For updating the scenes and animations."""
         if f.screen_fade.fade:
             self.ui_manager.purge_ui_elements()
             f.screen_fade.change_fade(target=255, change=4)
@@ -812,14 +823,14 @@ class MainMenuView(arcade.View):
             self.window.show_view(intro_view)
 
     def on_mouse_press(self, x, y, button, modifiers):
-        '''If the user presses the mouse button, start the intro.'''
+        """If the user presses the mouse button, start the intro."""
 
 
 class IntroView(arcade.View):
-    '''The cinematic intro that plays once the player selects 'New game'.'''
+    """The cinematic intro that plays once the player selects 'New game'."""
 
     def __init__(self):
-        '''This is run once when we switch to this view.'''
+        """Get all the stuff ready for the intro."""
         super().__init__()
 
         # For managing the GUI.
@@ -863,7 +874,7 @@ class IntroView(arcade.View):
         self.scene_list.append(self.instructions_image)
 
     def on_show(self):
-        '''This is run once when we switch to this view.'''
+        """This is run once when we switch to this view."""
 
         # Remove all previous UI.
         self.ui_manager.purge_ui_elements()
@@ -879,7 +890,7 @@ class IntroView(arcade.View):
         f.screen_fade.fade = True
 
     def on_update(self, delta_time: float):
-        '''For updating the scenes and animations.'''
+        """For updating the scenes and animations."""
 
         # Check which scene we are on.
         if self.scene == 1:
@@ -897,23 +908,23 @@ class IntroView(arcade.View):
             f.screen_fade.change_fade(target=0, change=4)
 
     def on_draw(self):
-        '''Draw this view.'''
+        """Draw this view."""
         arcade.start_render()
         self.scene_list.draw(filter=GL_NEAREST)
         self.fade_list.draw(filter=GL_NEAREST)
 
     def on_mouse_press(self, x, y, button, modifiers):
-        '''If the user presses the mouse button, start the game.'''
+        """If the user presses the mouse button, start the game."""
         game_view = GameView()
         game_view.setup()
         self.window.show_view(game_view)
 
 
 class EndView(arcade.View):
-    '''The end view that shows when the player finds the treasure and ends the game.'''
+    """The end view that shows when the player finds the treasure and ends the game."""
 
     def __init__(self):
-        '''This is run once when we switch to this view.'''
+        """This is run once when we switch to this view."""
         super().__init__()
 
         # For managing the GUI.
@@ -930,7 +941,9 @@ class EndView(arcade.View):
         self.fade_list = arcade.SpriteList()
 
     def on_show(self):
-        '''Set stuff for the end screen image.'''
+        """Set stuff for the end screen image."""
+        # Start with a dark fade.
+        f.screen_fade.alpha = 255
 
         # Remove all previous UI.
         self.ui_manager.purge_ui_elements()
@@ -951,23 +964,23 @@ class EndView(arcade.View):
         self.fade_list.append(f.screen_fade)
 
     def on_draw(self):
-        '''Draw this view.'''
+        """Draw this view."""
         arcade.start_render()
         self.end_image_list.draw(filter=GL_NEAREST)
         self.fade_list.draw(filter=GL_NEAREST)
 
     def on_update(self, delta_time: float):
-        '''For updating the scenes and animations.'''
+        """For updating the scenes and animations."""
         # Make sure it is positioned correctly.
-        f.screen_fade.center_x = c.SCREEN_WIDTH // 2#TODO: Set this to view left or something.
-        f.screen_fade.center_y = c.SCREEN_HEIGHT // 2
-        f.screen_fade.change_fade(target=0, change=4)
         arcade.set_viewport(0, c.SCREEN_WIDTH - 1, 0, c.SCREEN_HEIGHT - 1)
+        f.screen_fade.center_x = c.SCREEN_WIDTH // 2
+        f.screen_fade.center_y = c.SCREEN_HEIGHT // 2
+        f.screen_fade.change_fade(target=0, change=2)
 
 
 def main():
-    '''Main method.'''
-    window = arcade.Window(c.SCREEN_WIDTH, c.SCREEN_HEIGHT, c.SCREEN_TITLE, resizable=False, fullscreen=True)
+    """Main method."""
+    window = arcade.Window(c.SCREEN_WIDTH, c.SCREEN_HEIGHT, c.SCREEN_TITLE, resizable=True, fullscreen=False)
     start_view = MainMenuView()
     window.show_view(start_view)
     arcade.run()

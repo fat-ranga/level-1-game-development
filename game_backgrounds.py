@@ -1,14 +1,14 @@
-'''
+"""
 The stuff for the parallax environment backgrounds.
 
 Import this as 'b' for consistency.
-'''
+"""
 import arcade
 import game_constants as c
 
 
 class Background(arcade.Sprite):
-    '''Parallax background environment sprite.'''
+    """Parallax background environment sprite."""
 
     def __init__(self):
         # Set up parent class.

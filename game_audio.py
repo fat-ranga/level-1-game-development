@@ -1,9 +1,9 @@
-'''
+"""
 For all of the game's audio files, these are all loaded
 into the game using the load_audio function.
 
 Import this as 'a' for consistency.
-'''
+"""
 import arcade
 
 # Example usage.
@@ -19,7 +19,7 @@ sound = {}
 
 
 def add_audio_to_list():
-    '''Loads all the names of the audio files and puts them into audio_list.'''
+    """Loads all the names of the audio files and puts them into audio_list."""
     audio_list.append('ak_47_fire')
     audio_list.append('ak_47_reload')
     audio_list.append('clip_load')

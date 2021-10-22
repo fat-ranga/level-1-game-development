@@ -1,30 +1,29 @@
-'''
+"""
 User interface for the game, defines buttons and stuff.
 
 Import this as 'g' for consistency.
-'''
+"""
 import arcade
 import arcade.gui
 
 import game_constants as c
 import game_functions as f
-from arcade.gui import UIManager
 
 
 class StartButton(arcade.gui.UIImageButton):
-    '''
+    """
     To capture a button click, subclass the button and override on_click.
-    '''
+    """
 
     def on_click(self):
-        '''Called when user lets off button'''
+        """Called when user lets off button"""
 
         # This fade initiates the transition to the intro.
         f.screen_fade.fade = True
 
 
 class Reticle(arcade.Sprite):
-    '''Aiming reticle used in place of the mouse cursor'''
+    """Aiming reticle used in place of the mouse cursor."""
 
     def __init__(self):
         # Set up parent class.

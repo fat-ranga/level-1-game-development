@@ -1,8 +1,8 @@
-'''
+"""
 For all npcs, enemies and effects.
 
 Import this as 'e' for consistency.
-'''
+"""
 
 import arcade
 import os
@@ -16,7 +16,7 @@ import game_audio as a
 
 
 class Explosion(arcade.Sprite):
-    '''This class creates an explosion animation.'''
+    """This class creates an explosion animation."""
 
     def __init__(self, texture_list):
         super().__init__()
@@ -38,7 +38,7 @@ class Explosion(arcade.Sprite):
 
 
 class ExplosiveBarrel(arcade.Sprite):
-    '''An explosive barrel that explodes when you shoot it.'''
+    """An explosive barrel that explodes when you shoot it."""
 
     def __init__(self, texture_list):
         super().__init__()
@@ -60,7 +60,7 @@ class ExplosiveBarrel(arcade.Sprite):
 
 
 class Enemy(arcade.Sprite):
-    '''Base class for the enemy.'''
+    """Base class for the enemy."""
 
     def __init__(self):
         # Set up parent class.
@@ -145,18 +145,18 @@ class Enemy(arcade.Sprite):
         self.back_arm = self.PlayerCharacterBackArm()
 
     def get_head_offset(self):
-        '''Gets a number in pixels of how much higher or lower the head should be positioned
-            on each frame of animation, so it doesn't stay still.'''
+        """Gets a number in pixels of how much higher or lower the head should be positioned
+            on each frame of animation, so it doesn't stay still."""
 
     def acquire_mouse_position(self, x, y):
-        '''Get the mouse x and y from the Game class.'''
+        """Get the mouse x and y from the Game class."""
         self.mouse_pos_x = x
         self.mouse_pos_y = y
 
     def update_appendages(self):
-        '''Positions the sprites and updates variables such as jumping and idling for the legs.
+        """Positions the sprites and updates variables such as jumping and idling for the legs.
             Makes the cur_texture of all the appendages the same as the player sprite's.
-        '''
+        """
 
         # Set type of gun equipped.
         self.front_arm.equipped_one_handed = self.equipped_one_handed
@@ -182,31 +182,31 @@ class Enemy(arcade.Sprite):
             if not self.idling:
                 if self.head.angle >= -90 and self.head.angle <= 90:
                     self.head.center_x = self.center_x + (
-                                f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
+                            f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
                                                  0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
                 else:
                     self.head.center_x = self.center_x + (
-                                f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                            f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
                                                  2 * c.PIXEL_SCALING)
             else:
                 if self.head.angle >= -90 and self.head.angle <= 90:
                     self.head.center_x = self.center_x + (
-                                f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
+                            f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
                                                  2 * c.PIXEL_SCALING)  # Offset for looking the other direction.
                 else:
                     self.head.center_x = self.center_x + (
-                                f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                            f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
                                                  0 * c.PIXEL_SCALING)
 
         else:
             if self.idling:
                 if self.head.angle >= -90 and self.head.angle <= 90:
                     self.head.center_x = self.center_x - (
-                                f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                            f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
                                                  0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
                 else:
                     self.head.center_x = self.center_x - (
-                                f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
+                            f.get_head_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
                                                  2 * c.PIXEL_SCALING)
             else:
                 if self.head.angle >= -90 and self.head.angle <= 90:
@@ -240,13 +240,13 @@ class Enemy(arcade.Sprite):
         self.firing = self.front_arm.firing
 
         if self.equipped_one_handed:
-            self.front_arm.center_y = self.center_y# + (17 * c.PIXEL_SCALING)
+            self.front_arm.center_y = self.center_y  # + (17 * c.PIXEL_SCALING)
             self.front_arm.update_rotation(dest_x=self.mouse_pos_x,
                                            dest_y=self.mouse_pos_y)
             if self.character_face_direction == c.RIGHT_FACING:
-                self.front_arm.center_x = self.center_x# - (4 * c.PIXEL_SCALING)
+                self.front_arm.center_x = self.center_x  # - (4 * c.PIXEL_SCALING)
             elif self.character_face_direction == c.LEFT_FACING:
-                self.front_arm.center_x = self.center_x# + (4 * c.PIXEL_SCALING)
+                self.front_arm.center_x = self.center_x  # + (4 * c.PIXEL_SCALING)
         else:
             self.front_arm.center_x = self.center_x
             self.front_arm.center_y = self.center_y
@@ -348,7 +348,7 @@ class Enemy(arcade.Sprite):
             return
 
     class PlayerCharacterLegs(arcade.Sprite):
-        '''Player Sprite legs.'''
+        """Player Sprite legs."""
 
         def __init__(self):
             # Set up parent class.
@@ -430,6 +430,7 @@ class Enemy(arcade.Sprite):
                 # RUNNING animation.
                 frame = self.cur_texture // c.UPDATES_PER_FRAME
                 direction = self.character_face_direction
+
                 # This is to stop the 'list out of bounds error'.
                 try:
                     self.texture = self.run_textures[frame][direction]
@@ -445,7 +446,7 @@ class Enemy(arcade.Sprite):
                 return
 
     class PlayerCharacterHead(arcade.Sprite):
-        '''Player Sprite head.'''
+        """Player Sprite head."""
 
         def __init__(self):
             # Set up parent class.
@@ -506,7 +507,7 @@ class Enemy(arcade.Sprite):
             self.angle = math.degrees(angle)
 
     class PlayerCharacterFrontArm(arcade.Sprite):
-        '''Player Sprite front arm.'''
+        """Player Sprite front arm."""
 
         def __init__(self):
             # Set up parent class.
@@ -628,6 +629,7 @@ class Enemy(arcade.Sprite):
                 # RUNNING animation.
                 frame = self.cur_texture // c.UPDATES_PER_FRAME
                 direction = self.character_face_direction
+
                 # This is to stop the 'list out of bounds error'.
                 try:
                     self.texture = self.run_textures[frame][direction]
@@ -663,7 +665,7 @@ class Enemy(arcade.Sprite):
             self.angle = math.degrees(angle)
 
     class PlayerCharacterBackArm(arcade.Sprite):
-        '''Player Sprite back arm.'''
+        """Player Sprite back arm."""
 
         def __init__(self):
             # Set up parent class.
@@ -744,6 +746,7 @@ class Enemy(arcade.Sprite):
                 # RUNNING animation.
                 frame = self.cur_texture // c.UPDATES_PER_FRAME
                 direction = self.character_face_direction
+
                 # This is to stop the 'list out of bounds error'.
                 try:
                     self.texture = self.run_textures[frame][direction]

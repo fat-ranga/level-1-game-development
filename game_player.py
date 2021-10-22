@@ -1,4 +1,4 @@
-'''
+"""
 Player character classes and functions.
 Import this as 'p' for consistency.
 
@@ -9,7 +9,7 @@ PlayerCharacter
     PlayerCharacterHead
     PlayerCharacterFrontArm
     PlayerCharacterBackArm
-'''
+"""
 
 import arcade
 import os
@@ -23,7 +23,7 @@ import game_items as itm
 
 
 class PlayerCharacter(arcade.Sprite):
-    '''Player Sprite.'''
+    """Player Sprite."""
 
     def __init__(self):
         # Set up parent class.
@@ -50,10 +50,6 @@ class PlayerCharacter(arcade.Sprite):
 
         # Whether the player has a one-handed gun or not.
         self.equipped_one_handed = False
-
-        # TODO: GUN
-        self.gun = itm.Weapon()
-        self.gun.equip(follow_x=self.center_x, follow_y=self.center_y)
 
         # Whether the player has a two-handed gun or not.
         self.equipped_two_handed = False
@@ -112,18 +108,18 @@ class PlayerCharacter(arcade.Sprite):
         self.back_arm = self.PlayerCharacterBackArm()
 
     def get_head_offset(self):
-        '''Gets a number in pixels of how much higher or lower the head should be positioned
-            on each frame of animation, so it doesn't stay still.'''
+        """Gets a number in pixels of how much higher or lower the head should be positioned
+            on each frame of animation, so it doesn't stay still."""
 
     def acquire_mouse_position(self, x, y):
-        '''Get the mouse x and y from the Game class.'''
+        """Get the mouse x and y from the Game class."""
         self.mouse_pos_x = x
         self.mouse_pos_y = y
 
     def update_appendages(self):
-        '''Positions the sprites and updates variables such as jumping and idling for the legs.
+        """Positions the sprites and updates variables such as jumping and idling for the legs.
             Makes the cur_texture of all the appendages the same as the player sprite's.
-        '''
+        """
 
         # Set type of gun equipped.
         self.front_arm.equipped_one_handed = self.equipped_one_handed
@@ -199,7 +195,8 @@ class PlayerCharacter(arcade.Sprite):
                     if self.front_arm.angle >= -90 and self.front_arm.angle <= 90:
                         self.front_arm.center_x = self.center_x + (
                                 f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
-                                                          2 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                                                          2 * c.PIXEL_SCALING)  # Offset for looking the other
+                        # direction.
                     else:
                         self.front_arm.center_x = self.center_x + (
                                 f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
@@ -225,7 +222,8 @@ class PlayerCharacter(arcade.Sprite):
                     if self.front_arm.angle >= -90 and self.front_arm.angle <= 90:
                         self.front_arm.center_x = self.center_x - (
                                 f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
-                                                          2 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                                                          2 * c.PIXEL_SCALING)  # Offset for looking the other
+                        # direction.
                     else:
                         self.front_arm.center_x = self.center_x - (
                                 f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
@@ -234,7 +232,8 @@ class PlayerCharacter(arcade.Sprite):
                     if self.front_arm.angle >= -90 and self.front_arm.angle <= 90:
                         self.front_arm.center_x = self.center_x - (
                                 f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
-                                                          0 * c.PIXEL_SCALING)  # Offset for looking the other direction.
+                                                          0 * c.PIXEL_SCALING)  # Offset for looking the other
+                        # direction.
                     else:
                         self.front_arm.center_x = self.center_x - (
                                 f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
@@ -270,7 +269,7 @@ class PlayerCharacter(arcade.Sprite):
                                   dest_y=self.mouse_pos_y)
 
         # Front arm.
-        #self.front_arm.center_y = self.center_y + (f.get_arms_offset_y(self.cur_texture_name) * c.PIXEL_SCALING)
+        # self.front_arm.center_y = self.center_y + (f.get_arms_offset_y(self.cur_texture_name) * c.PIXEL_SCALING)
 
         self.front_arm.jumping = self.jumping
         self.front_arm.climbing = self.climbing
@@ -391,7 +390,7 @@ class PlayerCharacter(arcade.Sprite):
             return
 
     class PlayerCharacterLegs(arcade.Sprite):
-        '''Player Sprite legs.'''
+        """Player Sprite legs."""
 
         def __init__(self):
             # Set up parent class.
@@ -488,7 +487,7 @@ class PlayerCharacter(arcade.Sprite):
                 return
 
     class PlayerCharacterHead(arcade.Sprite):
-        '''Player Sprite head.'''
+        """Player Sprite head."""
 
         def __init__(self):
             # Set up parent class.
@@ -549,7 +548,7 @@ class PlayerCharacter(arcade.Sprite):
             self.angle = math.degrees(angle)
 
     class PlayerCharacterFrontArm(arcade.Sprite):
-        '''Player Sprite front arm.'''
+        """Player Sprite front arm."""
 
         def __init__(self):
             # Set up parent class.
@@ -632,8 +631,8 @@ class PlayerCharacter(arcade.Sprite):
             return
 
         def update_animation(self, delta_time: float = 1 / 60):
-            #print(self.firing) TODO: remove these once issue is solved
-            #print(self.cur_texture)
+            # print(self.firing) TODO: remove these once issue is resolved
+            # print(self.cur_texture)
             # Equip gun
             if self.equipped_one_handed and not self.firing:
                 self.texture = self.one_handed_texture_pair[self.character_face_direction]
@@ -647,7 +646,7 @@ class PlayerCharacter(arcade.Sprite):
                 self.cur_texture += 1
                 frame = self.cur_texture // c.UPDATES_PER_FRAME
                 if frame >= 3:
-                    self.firing = False
+                    # self.firing = False
                     return
                 direction = self.character_face_direction
                 self.texture = self.one_handed_firing_textures[frame][direction]
@@ -709,7 +708,7 @@ class PlayerCharacter(arcade.Sprite):
             self.angle = math.degrees(angle)
 
     class PlayerCharacterBackArm(arcade.Sprite):
-        '''Player Sprite back arm.'''
+        """Player Sprite back arm."""
 
         def __init__(self):
             # Set up parent class.
