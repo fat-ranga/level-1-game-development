@@ -37,7 +37,7 @@ class Explosion(arcade.Sprite):
             self.remove_from_sprite_lists()
 
 
-class ExplosiveBarrel(arcade.Sprite):
+class BarrelExplosion(arcade.Sprite):
     """An explosive barrel that explodes when you shoot it."""
 
     def __init__(self, texture_list):

@@ -36,6 +36,9 @@ class GameView(arcade.View):
         # Checks if the treasure has been found and the game won.
         self.game_won = False
 
+        # Keep track of the level. Starts at the first one.
+        self.level = 1
+
         # Manages the GUI.
         self.ui_manager = UIManager()
 
@@ -58,6 +61,7 @@ class GameView(arcade.View):
         self.explosions_list = None
         self.barrel_list = None
         self.background_decorations_list = None
+        self.next_level_list = None
         self.background_walls_list = None
         self.treasure_list = None
         self.grass_list = None
@@ -73,7 +77,12 @@ class GameView(arcade.View):
         self.player_sprite = None
 
         # Our background sprites.
-        self.background_0 = None
+
+        # Medium-ish away backgrounds
+        self.medium_background_0 = None
+        self.medium_background_1 = None
+        self.close_background_0 = None
+        self.close_background_1 = None
 
         # The hit effects textures.
         self.explosion_texture_list = []
@@ -148,6 +157,7 @@ class GameView(arcade.View):
         self.background_decorations_list = arcade.SpriteList()
         self.explosions_list = arcade.SpriteList()
         self.foreground_decorations_list = arcade.SpriteList()
+        self.next_level_list = arcade.SpriteList()
         self.treasure_list = arcade.SpriteList()
         self.grass_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
@@ -199,16 +209,19 @@ class GameView(arcade.View):
         # The treasure at the end of the game.
         treasure_layer_name = 'Treasure'
 
+        # Dark object that transports the player to the next level.
+        next_level_layer_name = 'Next Level'
+
         # Map name.
-        map_name = f'resources/maps/1.tmx'
+        map_name = f'resources/maps/{self.level}.tmx'
 
         # Read in the tiled map.
         my_map = arcade.tilemap.read_tmx(map_name)
 
         # TODO: GUN
-        self.gun = itm.Weapon()
-        self.gun.equip(follow_x=self.player_sprite.center_x, follow_y=self.player_sprite.center_y)
-        self.items_list.append(self.gun)
+        # self.gun = itm.Weapon()
+        # self.gun.equip(follow_x=self.player_sprite.center_x, follow_y=self.player_sprite.center_y)
+        # self.items_list.append(self.gun)
 
         # Calculate the right edge of the my_map in pixels.
         self.end_of_map = my_map.map_size.width * (c.GRID_PIXEL_SIZE * c.PIXEL_SCALING)
@@ -218,11 +231,36 @@ class GameView(arcade.View):
         self.fade_list.append(f.screen_fade)
 
         # Parallax environment backgrounds.
-        self.background_0 = b.Background()
+        self.medium_background_0 = b.Background(parallax_multiplier_x=0.9,
+                                                parallax_multiplier_y=0.9,
+                                                texture_type=1)
+        self.medium_background_1 = b.Background(parallax_multiplier_x=0.9,
+                                                parallax_multiplier_y=0.9,
+                                                texture_type=1)
 
-        self.background_0.follow_x = self.player_sprite.center_x
-        self.background_0.follow_y = self.player_sprite.center_y
-        self.backgrounds_list.append(self.background_0)
+        self.close_background_0 = b.Background(parallax_multiplier_x=0.7,
+                                               parallax_multiplier_y=0.7,
+                                               texture_type=2)
+        self.close_background_1 = b.Background(parallax_multiplier_x=0.7,
+                                               parallax_multiplier_y=0.7,
+                                               texture_type=2)
+
+        self.medium_background_0.follow_x = self.view_left + (c.SCREEN_WIDTH // 2) - c.SCREEN_WIDTH // 2
+        self.medium_background_0.follow_y = self.view_bottom + (c.SCREEN_HEIGHT // 2) + (20 * c.PIXEL_SCALING)
+
+        self.medium_background_1.follow_x = self.view_left + (c.SCREEN_WIDTH // 2) + c.SCREEN_WIDTH // 2
+        self.medium_background_1.follow_y = self.view_bottom + (c.SCREEN_HEIGHT // 2) + (20 * c.PIXEL_SCALING)
+
+        self.close_background_0.follow_x = self.view_left + (c.SCREEN_WIDTH // 2) - c.SCREEN_WIDTH // 2
+        self.close_background_0.follow_y = self.view_bottom + (c.SCREEN_HEIGHT // 2) + (200 * c.PIXEL_SCALING)
+
+        self.close_background_1.follow_x = self.view_left + (c.SCREEN_WIDTH // 2) + c.SCREEN_WIDTH // 2
+        self.close_background_1.follow_y = self.view_bottom + (c.SCREEN_HEIGHT // 2) + (200 * c.PIXEL_SCALING)
+
+        self.backgrounds_list.append(self.medium_background_0)
+        self.backgrounds_list.append(self.medium_background_1)
+        self.backgrounds_list.append(self.close_background_0)
+        self.backgrounds_list.append(self.close_background_1)
 
         # Platforms.
         self.wall_list = arcade.tilemap.process_layer(my_map,
@@ -251,6 +289,11 @@ class GameView(arcade.View):
                                                        c.PIXEL_SCALING,
                                                        use_spatial_hash=True)
 
+        # Next level.
+        self.next_level_list = arcade.tilemap.process_layer(my_map, next_level_layer_name,
+                                                            c.PIXEL_SCALING,
+                                                            use_spatial_hash=True)
+
         # Tint all the sprites in this background walls list to a darker colour to differentiate it
         # from the other layers.
         for wall in self.background_walls_list:
@@ -275,8 +318,9 @@ class GameView(arcade.View):
         # of the explosion sprite because it
         # takes too long and would cause the game to pause.
         self.explosion_texture_list = []
+        self.barrel_explosion_texture_list = []
 
-        # Load the explosions.
+        # Load the dirt hit effect.
         for i in range(8):
             texture = arcade.load_texture(f'resources/images/effects/dirt_{i}.png')
             self.explosion_texture_list.append(texture)
@@ -285,6 +329,11 @@ class GameView(arcade.View):
         for i in range(5):
             texture = arcade.load_texture(f'resources/images/effects/barrel_{i}.png')
             self.barrel_texture_list.append(texture)
+
+        # Load the barrel explosion effect.
+        for i in range(20):
+            texture = arcade.load_texture(f'resources/images/effects/barrel_explosion/{i}.png')
+            self.barrel_explosion_texture_list.append(texture)
 
         # Other stuff.
         # Set the background color
@@ -328,6 +377,7 @@ class GameView(arcade.View):
         self.treasure_list.draw(filter=GL_NEAREST)
         self.items_list.draw(filter=GL_NEAREST)
         self.player_list.draw(filter=GL_NEAREST)
+        self.next_level_list.draw(filter=GL_NEAREST)
         self.bullet_list.draw(filter=GL_NEAREST)
         self.barrel_list.draw(filter=GL_NEAREST)
         self.explosions_list.draw(filter=GL_NEAREST)
@@ -568,10 +618,10 @@ class GameView(arcade.View):
         self.player_list.update_animation(delta_time)
 
         # Position the gun to the player front_arm sprite.
-        self.gun.update_position(follow_x=self.player_sprite.front_arm.center_x,
-                                 follow_y=self.player_sprite.front_arm.center_y,
-                                 angle=self.player_sprite.front_arm.angle,
-                                 direction=self.player_sprite.character_face_direction)
+        # self.gun.update_position(follow_x=self.player_sprite.front_arm.center_x,
+        #                         follow_y=self.player_sprite.front_arm.center_y,
+        #                         angle=self.player_sprite.front_arm.angle,
+        #                         direction=self.player_sprite.character_face_direction)
 
         self.coin_list.update_animation(delta_time)
 
@@ -619,9 +669,21 @@ class GameView(arcade.View):
                                                                    self.barrel_list)
             # Loop through each barrel we hit (if any) and remove it.
             for barrel in barrel_hit_list:
-                # TODO: the barrel getting destroyed animation.
+                # Make an explosion
+                explosion = e.BarrelExplosion(self.barrel_explosion_texture_list)
+
+                # Move it to the location of the coin
+                explosion.center_x = barrel_hit_list[0].center_x
+                explosion.center_y = barrel_hit_list[0].center_y
+                explosion.scale = c.PIXEL_SCALING
+
+                # Call update() because it sets which image we start on
+                explosion.update()
 
                 arcade.play_sound(a.sound[f'explosion'])
+
+                # Add to a list of sprites that are explosions
+                self.explosions_list.append(explosion)
 
                 # Remove the barrel.
                 barrel.remove_from_sprite_lists()
@@ -664,10 +726,13 @@ class GameView(arcade.View):
                 self.game_won = True
                 # End the game.
 
-        # Update the environment backgrounds.
-        self.background_0.follow_x = self.player_sprite.center_x
-        self.background_0.follow_y = self.player_sprite.center_y
-        self.backgrounds_list.update()
+        # Check if the player got to the end of the current map
+        # and made it to the next level. If so, go to the next level.
+        if arcade.check_for_collision_with_list(self.player_sprite,
+                                                self.next_level_list):
+            self.level += 1
+
+            self.setup()
 
         # Track if we need to change the viewport.
         changed_viewport = False
@@ -718,6 +783,28 @@ class GameView(arcade.View):
 
             # Stop the draw timer, and calculate total on_draw time.
             self.processing_time = timeit.default_timer() - start_time
+
+        # -- ANYTHING AFTER VIEWPORT CODE IS UPDATED HERE SO THAT THEY DON'T MOVE AROUND AND LAG. -- #
+
+        # Update the environment backgrounds.
+        self.medium_background_0.follow_x = self.view_left + (c.SCREEN_WIDTH // 2) - c.SCREEN_WIDTH // 2
+        self.medium_background_0.follow_y = self.view_bottom + (c.SCREEN_HEIGHT // 2) + (50 * c.PIXEL_SCALING)
+
+        self.medium_background_1.follow_x = self.view_left + (c.SCREEN_WIDTH // 2) + c.SCREEN_WIDTH // 2
+        self.medium_background_1.follow_y = self.view_bottom + (c.SCREEN_HEIGHT // 2) + (50 * c.PIXEL_SCALING)
+
+        self.close_background_0.follow_x = self.view_left + (
+                    c.SCREEN_WIDTH // 2)  # - c.SCREEN_WIDTH // 2 # TODO: this thing with the backgrounds and positioning thing [[CHANGE THE ACTUAL FOLLOW_X]]
+        self.close_background_0.follow_y = self.view_bottom + (c.SCREEN_HEIGHT // 2) + (220 * c.PIXEL_SCALING)
+
+        self.close_background_1.follow_x = self.view_left + (c.SCREEN_WIDTH // 2) + self.close_background_1.width
+        self.close_background_1.follow_y = self.view_bottom + (c.SCREEN_HEIGHT // 2) + (220 * c.PIXEL_SCALING)
+
+        self.backgrounds_list.update()
+
+        if self.close_background_1.right < self.view_left + c.SCREEN_WIDTH:
+            self.close_background_0.center_x += self.close_background_0.width * c.PIXEL_SCALING
+            #print(self.close_background_1.right, (self.view_left + c.SCREEN_WIDTH))
 
         # Do the screen fade here after the viewport code so that it doesn't move around.
         if self.game_won:

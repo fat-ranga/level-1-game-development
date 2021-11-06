@@ -36,6 +36,9 @@ EFFECT_UPDATES_PER_FRAME = 5
 # Cinematic intro constants.
 INTRO_UPDATES_PER_FRAME = 10
 
+# Updates for the gun shooting animation.
+GUN_UPDATES_PER_FRAME = 4
+
 # How many pixels to keep as a minimum margin between
 # the character and the edge of the screen.
 LEFT_VIEWPORT_MARGIN = SCREEN_WIDTH // 2 + 50

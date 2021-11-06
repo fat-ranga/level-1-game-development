@@ -10,7 +10,7 @@ import game_constants as c
 class Background(arcade.Sprite):
     """Parallax background environment sprite."""
 
-    def __init__(self):
+    def __init__(self, texture_type, parallax_multiplier_x, parallax_multiplier_y):
         # Set up parent class.
         super().__init__()
 
@@ -19,11 +19,20 @@ class Background(arcade.Sprite):
 
         # Sprite texture.
         self.mountains_texture = arcade.load_texture('resources/images/backgrounds/test.png')
-        self.texture = self.mountains_texture
+        self.close_texture = arcade.load_texture('resources/images/backgrounds/close.png')
+
+        self.texture_type = texture_type
+
+        if self.texture_type == 1:
+            self.texture = self.mountains_texture
+        if self.texture_type == 2:
+            self.texture = self.close_texture
+        else:
+            self.texture = self.mountains_texture  # By default.
 
         # Set the default values for parallax. At 1, it moves at the same rate as the player.
-        self.parallax_multiplier_x = 0.9
-        self.parallax_multiplier_y = 0.9
+        self.parallax_multiplier_x = parallax_multiplier_x
+        self.parallax_multiplier_y = parallax_multiplier_y
 
         # Positions it moves according to. Set these to the player co-ordinates.
         self.follow_x = None

@@ -195,8 +195,7 @@ class PlayerCharacter(arcade.Sprite):
                     if self.front_arm.angle >= -90 and self.front_arm.angle <= 90:
                         self.front_arm.center_x = self.center_x + (
                                 f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) - (
-                                                          2 * c.PIXEL_SCALING)  # Offset for looking the other
-                        # direction.
+                                                          2 * c.PIXEL_SCALING)  # Offset for looking the other# direction.
                     else:
                         self.front_arm.center_x = self.center_x + (
                                 f.get_arms_offset_x(self.cur_texture_name) * c.PIXEL_SCALING) + (
@@ -605,7 +604,7 @@ class PlayerCharacter(arcade.Sprite):
 
             # Load textures for ONE-HANDED FIRING.
             self.one_handed_firing_textures = []
-            for i in range(3):
+            for i in range(4 + 1):
                 texture = f.load_texture_pair_vertical_flip(
                     f'resources/images/characters/player/front_arms/one_handed_firing_{i}.png')
                 self.one_handed_firing_textures.append(texture)
@@ -620,16 +619,6 @@ class PlayerCharacter(arcade.Sprite):
             # Max speed we can rotate.
             self.rot_speed = 5
 
-        def animation_firing_one_handed(self):
-            # Fire one-handed weapon.
-            self.cur_texture += 1
-            if self.cur_texture > 4 * c.UPDATES_PER_FRAME:
-                self.cur_texture = 0
-            frame = self.cur_texture // c.UPDATES_PER_FRAME
-            direction = self.character_face_direction
-            self.texture = self.one_handed_firing_textures[frame][direction]
-            return
-
         def update_animation(self, delta_time: float = 1 / 60):
             # print(self.firing) TODO: remove these once issue is resolved
             # print(self.cur_texture)
@@ -637,7 +626,7 @@ class PlayerCharacter(arcade.Sprite):
             if self.equipped_one_handed and not self.firing:
                 self.texture = self.one_handed_texture_pair[self.character_face_direction]
                 return
-
+            """
             # Fire one-handed weapon.
             if self.firing:
 
@@ -650,6 +639,19 @@ class PlayerCharacter(arcade.Sprite):
                     return
                 direction = self.character_face_direction
                 self.texture = self.one_handed_firing_textures[frame][direction]
+                return
+            """
+            # Fire one-handed weapon.
+            if self.firing:
+                self.cur_texture += 1
+                if self.cur_texture > 4 * c.GUN_UPDATES_PER_FRAME:
+                    self.cur_texture = 0
+                frame = self.cur_texture // c.GUN_UPDATES_PER_FRAME
+                if frame >= 4:
+                    self.firing = False
+                direction = self.character_face_direction
+                self.texture = self.one_handed_firing_textures[frame][direction]
+
                 return
 
             # CLIMBING animation.
